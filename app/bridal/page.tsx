@@ -64,7 +64,7 @@ export default function BridalPage() {
           eyebrow="Build Your Wedding Party"
           heading="Every Role, Every Style"
           subtext="Shop by role to find coordinated looks that work beautifully together — without being matchy-matchy."
-          accent="blush"
+          eyebrowColor="blush"
           className="mb-12 max-w-xl"
         />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
