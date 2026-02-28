@@ -67,7 +67,7 @@ function TuxMatchTool() {
         </div>
       </div>
 
-      <GoldButton onClick={handleMatch} disabled={!color || loading} isLoading={loading}>
+      <GoldButton onClick={handleMatch} disabled={!color || loading} loading={loading}>
         {loading ? 'Matching...' : 'Find My Match ✦'}
       </GoldButton>
 

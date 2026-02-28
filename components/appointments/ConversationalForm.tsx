@@ -433,7 +433,7 @@ export function ConversationalForm({ className }: { className?: string }) {
             <GoldButton
               onClick={handleSubmit}
               disabled={!canProceed() || submitting}
-              isLoading={submitting}
+              loading={submitting}
             >
               {submitting ? 'Booking...' : 'Confirm Appointment'}
             </GoldButton>

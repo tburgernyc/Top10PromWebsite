@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { GoldButton, GhostButton } from '@/components/ui/Button'
+import { GoldButton, BlushButton, GhostButton } from '@/components/ui/Button'
 import { ScrollReveal } from '@/components/animations/ScrollReveal'
 import { useCursor } from '@/components/layout/CustomCursor'
 
@@ -121,9 +121,9 @@ export function FeatureBlock({
                       <Link href={cta.href} style={{ cursor: 'none' }}>{cta.label}</Link>
                     </GoldButton>
                   ) : (
-                    <GoldButton variant="blush">
+                    <BlushButton>
                       <Link href={cta.href} style={{ cursor: 'none' }}>{cta.label}</Link>
-                    </GoldButton>
+                    </BlushButton>
                   )
                 )}
                 {secondaryCta && (

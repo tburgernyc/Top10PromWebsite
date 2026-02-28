@@ -224,7 +224,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex gap-4">
                 <button onClick={() => setStep('shipping')} className="text-sm font-sans text-[var(--white-soft)]/35 hover:text-[var(--white-soft)]/60 transition-colors" style={{ cursor: 'none' }}>← Back</button>
-                <GoldButton onClick={handleProceedToStripe} isLoading={processing} disabled={processing}>
+                <GoldButton onClick={handleProceedToStripe} loading={processing} disabled={processing}>
                   {processing ? 'Redirecting...' : `Pay ${formatPrice(subtotal * 1.07 + (subtotal >= 200 ? 0 : 9.99))}`}
                 </GoldButton>
               </div>

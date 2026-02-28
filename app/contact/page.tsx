@@ -75,7 +75,7 @@ function ContactForm() {
           style={{ cursor: 'none' }}
         />
       </div>
-      <GoldButton type="submit" disabled={submitting || !form.name || !form.email || !form.message} isLoading={submitting}>
+      <GoldButton type="submit" disabled={submitting || !form.name || !form.email || !form.message} loading={submitting}>
         {submitting ? 'Sending...' : 'Send Message'}
       </GoldButton>
     </form>
