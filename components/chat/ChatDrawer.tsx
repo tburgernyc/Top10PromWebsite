@@ -16,6 +16,7 @@ interface ChatDrawerProps {
   onClose: () => void
   initialMessage?: string
   context?: string
+  pageContext?: string
 }
 
 const WELCOME: ChatMessage = {
@@ -110,7 +111,7 @@ export function ChatDrawer({ isOpen, onClose, initialMessage, context }: ChatDra
                     m.id === assistantId ? { ...m, content: fullContent } : m
                   )
                 )
-              } catch {}
+              } catch { }
             }
           }
         }

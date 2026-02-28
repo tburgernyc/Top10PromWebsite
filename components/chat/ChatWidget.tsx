@@ -32,7 +32,11 @@ const WELCOME_MESSAGE: ChatMessage = {
 
 // ── CHAT WIDGET (floating button + inline panel) ──────────────
 
-export function ChatWidget() {
+interface ChatWidgetProps {
+  pageContext?: string
+}
+
+export function ChatWidget({ pageContext }: ChatWidgetProps = {}) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE])
   const [input, setInput] = useState('')
@@ -83,7 +87,7 @@ export function ChatWidget() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             messages: history,
-            page: typeof window !== 'undefined' ? window.location.pathname : '/',
+            pageContext: pageContext ?? (typeof window !== 'undefined' ? window.location.pathname : '/'),
           }),
         })
 

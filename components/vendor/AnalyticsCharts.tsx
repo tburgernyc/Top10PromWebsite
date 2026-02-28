@@ -244,4 +244,48 @@ export function DualMetricChart({ data, className }: DualMetricProps) {
   )
 }
 
+// ── COMPOSITE: ANALYTICS CHARTS (vendor dashboard) ─────────────
+
+const MOCK_REVENUE: { month: string; revenue: number; orders: number }[] = [
+  { month: 'Mar', revenue: 14200, orders: 22 },
+  { month: 'Apr', revenue: 18900, orders: 31 },
+  { month: 'May', revenue: 24100, orders: 41 },
+  { month: 'Jun', revenue: 31500, orders: 54 },
+  { month: 'Jul', revenue: 28450, orders: 47 },
+  { month: 'Aug', revenue: 22300, orders: 38 },
+  { month: 'Sep', revenue: 19800, orders: 33 },
+  { month: 'Oct', revenue: 26700, orders: 45 },
+  { month: 'Nov', revenue: 33200, orders: 57 },
+  { month: 'Dec', revenue: 41000, orders: 68 },
+  { month: 'Jan', revenue: 29100, orders: 49 },
+  { month: 'Feb', revenue: 28450, orders: 47 },
+]
+
+const MOCK_STYLES: { name: string; units: number; revenue: number }[] = [
+  { name: 'Midnight Cascade', units: 42, revenue: 14658 },
+  { name: 'Golden Hour Sequin', units: 38, revenue: 8322 },
+  { name: 'Rose Garden A-Line', units: 31, revenue: 15169 },
+  { name: 'Ethereal Tulle Ball', units: 27, revenue: 4833 },
+  { name: 'Onyx Mermaid', units: 24, revenue: 10776 },
+]
+
+const MOCK_OCCASIONS: { name: string; value: number }[] = [
+  { name: 'Prom', value: 54 },
+  { name: 'Homecoming', value: 18 },
+  { name: 'Bridal', value: 14 },
+  { name: 'Gala', value: 9 },
+  { name: 'Other', value: 5 },
+]
+
+export function AnalyticsCharts({ className }: { className?: string }) {
+  return (
+    <div className={cn('grid grid-cols-1 lg:grid-cols-2 gap-6', className)}>
+      <RevenueTrendChart data={MOCK_REVENUE} className="lg:col-span-2" />
+      <TopStylesChart data={MOCK_STYLES} />
+      <OccasionBreakdownChart data={MOCK_OCCASIONS} />
+      <DualMetricChart data={MOCK_REVENUE} className="lg:col-span-2" />
+    </div>
+  )
+}
+
 export default RevenueTrendChart
