@@ -7,6 +7,7 @@ import { GoldButton } from '@/components/ui/Button'
 import { useToast } from '@/components/ui/Toast'
 import { ChatWidget } from '@/components/chat/ChatWidget'
 import { cn } from '@/lib/utils'
+import { STORES } from '@/lib/mock-data'
 
 const StoreMap = dynamic(() => import('@/components/stores/StoreMap'), { ssr: false })
 
@@ -129,7 +130,7 @@ export default function ContactPage() {
 
             {/* Mini map */}
             <div className="rounded-2xl overflow-hidden border border-white/10 h-64">
-              <StoreMap className="h-full" initialStoreId="hq" />
+              <StoreMap className="h-full" stores={STORES} selectedStore={STORES[0]} />
             </div>
 
             <a

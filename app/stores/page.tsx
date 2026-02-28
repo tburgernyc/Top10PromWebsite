@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import { StoreList } from '@/components/stores/StoreCard'
+import { STORES } from '@/lib/mock-data'
 import { RegionFilter } from '@/components/stores/RegionFilter'
 import { ChatWidget } from '@/components/chat/ChatWidget'
 
@@ -37,7 +38,7 @@ export default function StoresPage() {
         <div className="flex flex-col lg:flex-row gap-0 min-h-[600px]">
           {/* Map */}
           <div className="lg:w-1/2 h-[400px] lg:h-[700px] lg:sticky lg:top-20">
-            <StoreMap className="h-full" />
+            <StoreMap className="h-full" stores={STORES} />
           </div>
 
           {/* Store list */}
