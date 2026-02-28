@@ -1,0 +1,1573 @@
+TOP 10 PROM — FULL SITE SPECIFICATION v3.0
+EVERY PAGE AT LANDING PAGE STANDARD
+===============================================================
+
+================================================================
+GLOBAL SYSTEMS (Applied to ALL pages)
+================================================================
+
+## SCROLL ENGINE (ALL PAGES)
+- Lenis smooth scroll on every page, same config as landing:
+  duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 4)
+- GSAP ScrollTrigger synced to Lenis on all pages
+- All scroll-triggered animations: cleanup on unmount
+
+## CURSOR (DESKTOP ONLY)
+Replace default cursor site-wide with a custom cursor system:
+- Default state: small white dot (8px), 
+  larger ring (32px) that follows with 0.12s lerp delay
+- Hover state (over buttons/links): ring expands to 56px, 
+  fills with rgba(212,175,114,0.15), dot disappears
+- Hover state (over dress cards): cursor transforms to show 
+  text "VIEW" in DM Sans 10px caps inside the ring
+- Hover state (over images): ring morphs to a crosshair-style 
+  expand icon
+- Drag state (over carousels): cursor shows "DRAG" text
+- Implement using a global React context + CSS custom properties
+- Disable on touch devices (pointer: coarse)
+
+## PAGE TRANSITIONS (ALL PAGES)
+Using Framer Motion AnimatePresence at the layout level:
+- Exit animation: current page fades to opacity 0 + 
+  translateY(-20px) over 300ms
+- A full-screen overlay wipe (left to right) in #0A0A14 
+  sweeps across in 350ms during transition
+- Enter animation: new page fades in from opacity 0 + 
+  translateY(20px) over 400ms after wipe completes
+- The Top 10 Prom wordmark briefly appears centered on the 
+  transition wipe in gold — 200ms visibility
+
+## NOISE TEXTURE OVERLAY (ALL PAGES)
+Apply a subtle grain/noise texture as a fixed pseudo-element 
+over the entire site:
+```css
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('/textures/noise.png');
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+Generate the noise.png as a 200×200 SVG-based noise pattern.
+This adds tactile depth to the dark backgrounds.
+GLASSMORPHISM DESIGN TOKENS (globals.css)
+css
+:root {
+  /* Backgrounds */
+  --bg-primary: #0A0A14;
+  --bg-secondary: #08080F;
+  --bg-elevated: #0F0F1E;
+
+  /* Glass variants */
+  --glass-light: rgba(255, 255, 255, 0.06);
+  --glass-medium: rgba(255, 255, 255, 0.09);
+  --glass-heavy: rgba(255, 255, 255, 0.13);
+  --glass-gold: rgba(212, 175, 114, 0.08);
+  --glass-blush: rgba(242, 181, 199, 0.08);
+
+  /* Borders */
+  --border-glass: 1px solid rgba(255, 255, 255, 0.10);
+  --border-gold: 1px solid rgba(212, 175, 114, 0.35);
+  --border-blush: 1px solid rgba(242, 181, 199, 0.35);
+
+  /* Accents */
+  --gold: #D4AF72;
+  --gold-light: #F0D090;
+  --blush: #F2B5C7;
+  --white-soft: #F8F4F0;
+  --purple-accent: #9B6FD4;
+
+  /* Typography */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'DM Sans', 'Inter', sans-serif;
+
+  /* Shadows */
+  --shadow-gold: 0 0 40px rgba(212, 175, 114, 0.15);
+  --shadow-blush: 0 0 40px rgba(242, 181, 199, 0.15);
+  --shadow-card: 0 24px 60px rgba(0, 0, 0, 0.4);
+
+  /* Blur */
+  --blur-sm: blur(8px);
+  --blur-md: blur(16px);
+  --blur-lg: blur(24px);
+  --blur-xl: blur(40px);
+}
+
+REUSABLE GLASSMORPHISM COMPONENTS
+<GlassPanel> variants:
+tsx
+// Usage: <GlassPanel variant="light|medium|heavy|gold|blush" 
+//                    glow="gold|blush|purple|none"
+//                    border="gold|white|blush|none">
+
+// Base styles always include:
+// border-radius: 16px (cards), 12px (chips), 24px (modals)
+// backdrop-filter: var(--blur-md)
+// transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1)
+
+<GoldButton> / <BlushButton> / <GhostButton>:
+All buttons share:
+Height: 52px desktop, 48px mobile
+Min-width: 160px
+Letter-spacing: 0.2em
+Font: DM Sans, 12px, 600 weight
+Text-transform: uppercase
+Border-radius: 4px (sharp luxury, not pill)
+Magnetic hover effect: button subtly follows cursor within
+20px radius using mousemove event (desktop only)
+Click: ripple animation from click point outward
+<SectionHeading> component:
+Every major section across every page uses this:
+Eyebrow text (12px, caps, letter-spacing 0.3em, gold or blush)
+Main heading (Playfair Display, 48–72px desktop, 32–48px mobile)
+Optional decorative rule (thin gold line, animated width)
+Optional subtext (DM Sans, 18px, muted white)
+Animate in: eyebrow first (opacity 0→1, y: 20→0),
+then heading per-character with split-type stagger,
+then rule width 0→full, then subtext
+All triggered by IntersectionObserver
+================================================================
+PAGE 2: /prom — PROM COLLECTION
+HERO SECTION
+Full-viewport hero. NOT a static image — a layered cinematic moment:
+Background:
+Two-layer parallax:
+Layer 1 (slowest): full-bleed blurred editorial image of a
+ballgown, scale: 1.15, parallax rate 0.3x scroll speed
+Layer 2: gradient overlay
+linear-gradient(to bottom, rgba(8,8,15,0.3) 0%, rgba(8,8,15,0.85) 70%, #08080F 100%)
+Floating left panel (glassmorphism):
+Appears at page load with x: -80px → 0, opacity: 0 → 1, delay 0.8s
+Contains: "NEW ARRIVALS 2026" in gold caps + a scrolling ticker
+of designer names running vertically upward
+Hero text (right-aligned, vertical center):
+Eyebrow: "THIS SEASON'S COLLECTIONS"
+H1: "This Is" (DM Sans light, 80px)
+"Your" (Playfair Display italic, 100px, gold shimmer)
+"Moment." (DM Sans light, 80px)
+Per-character stagger animation, each line offset by 0.4s
+Drop shadow: text-shadow: 0 4px 40px rgba(0,0,0,0.8)
+Scroll-triggered floating stat chips:
+As user scrolls 20% into hero:
+Three glassmorphism chips float in from bottom:
+"10,000+ Styles"
+"50+ Partner Stores"
+"Free Style Consultation"
+FILTER SYSTEM
+Sticky filter bar that activates when hero scrolls out of view:
+text
+[All Occasions ▼] [Silhouette ▼] [Color ▼] [Size ▼] 
+[Price Range ▼] [Designer ▼]   [✦ Clear All]
+
+Each filter is a glassmorphism dropdown with animated open/close
+Dropdown panels: glassmorphism heavy, border-gold, border-radius: 12px
+Color filter: renders actual color swatches (24px circles)
+not text labels
+Size filter: pill buttons in a grid
+Price range: a custom dual-handle range slider styled in gold
+Active filter state: pill turns gold filled
+Filter changes trigger a Framer Motion layout animation on the
+dress grid — cards reorder/resize smoothly (not a hard re-render)
+Mobile: filters collapse into a "FILTER & SORT" bottom sheet
+that slides up from bottom of screen with drag-to-dismiss
+DRESS GRID
+display: grid, grid-template-columns: repeat(3, 1fr) desktop,
+2-col tablet, 1-col mobile. Gap: 24px.
+ProductCard component (used site-wide):
+Each card is a premium interactive object:
+Default state:
+Aspect ratio: 3/4 (portrait)
+Image: object-fit: cover, slight warmth filter
+filter: saturate(1.05) contrast(1.02)
+Bottom gradient overlay: linear-gradient(to top, rgba(8,8,15,0.95) 0%, transparent 50%)
+Bottom info panel (always visible):
+Designer name: 10px caps gold
+Dress name: Playfair Display 16px white
+Price: DM Sans 14px blush
+Color dots: 5 color swatches max, then "+3 more"
+border-radius: 12px, overflow: hidden
+Glassmorphism border: var(--border-glass)
+Hover state (desktop, 250ms transition):
+Image scales to 1.06x
+Two CTA buttons slide up from bottom:
+"QUICK VIEW" (GhostButton)
+"TRY ON ✦" (GoldButton)
+Wishlist heart icon fades in top-right:
+filled gold when saved, outline when not
+A subtle gold glow appears at card border: var(--shadow-gold)
+Bottom info panel rises 8px
+Featured cards:
+Every 7th card is a "Featured" card — 2x height spanning 2 rows:
+Larger editorial image
+"FEATURED LOOK" gold badge top-left
+More prominent text treatment
+Includes designer quote in italics
+QUICK VIEW MODAL
+Triggered by "QUICK VIEW" button on ProductCard hover.
+Full-screen glassmorphism overlay with backdrop-filter: blur(20px).
+Modal panel: 900px wide, 80vh max, border-radius: 24px.
+Left panel (55%):
+Image gallery: main large image + 4 thumbnail strip at bottom
+Thumbnails animate on hover (scale 1.05, gold border)
+Main image: click to zoom (scale 1.8x, pan with mouse)
+"Virtual Try-On" floating button bottom-left of image
+Right panel (45%):
+Designer name (gold caps, 11px)
+Dress name (Playfair Display, 28px)
+Price (DM Sans, 22px, blush)
+Wholesale price if vendor session active (smaller, muted)
+Color selector: large swatches (36px circles), selected state
+has gold ring + checkmark
+Size selector: pill grid, unavailable sizes are struck-through
+not hidden
+Size guide link: opens a second modal overlay with measurement chart
+Quantity: minimal +/- stepper
+Two action buttons stacked:
+"ADD TO CART" (GoldButton, full width)
+"ADD TO WISHLIST" (GhostButton, full width)
+Below buttons:
+"✓ Free shipping on orders over $150"
+"✓ 30-day returns"
+"✓ Size holds available in-store"
+Description accordion (click to expand, smooth height animation)
+"Complete The Look" section: 3 small suggested accessories
+Modal entrance: scale 0.94→1, opacity 0→1, y: 20→0, duration 350ms
+Modal exit: scale 1→0.96, opacity 1→0, duration 250ms
+DESIGNER SPOTLIGHT SECTION (below grid)
+After the dress grid, before the footer:
+Horizontal scroll section — each designer gets a card:
+Each designer card (400px wide, 500px tall):
+Top half: editorial collage of 4 dress thumbnails in a 2x2 grid
+Bottom half: glassmorphism panel
+Designer logo or name in large Playfair Display
+Number of styles available
+"VIEW COLLECTION →" CTA
+On hover: entire card lifts 16px, gold border glow
+================================================================
+PAGE 3: /bridal — BRIDAL COLLECTION
+DIFFERENTIATION FROM PROM PAGE
+The bridal page must feel distinctly more elevated, hushed, and
+romantic — prom is aspirational energy, bridal is sacred ceremony.
+HERO
+Mood shift: Where prom hero is bold and electric, bridal hero
+is soft, quiet, and emotional.
+Background: slow-motion video loop of fabric draping (or
+high-res still with strong parallax), warmer color grading
+Overlay: softer gradient, more blush tones
+Ambient audio toggle (optional, off by default): soft orchestral
+swell that user can enable — small speaker icon top-right
+Hero headline:
+Eyebrow: "BRIDAL COLLECTIONS 2026"
+Line 1: "The Day You've" (DM Sans light, 72px)
+Line 2: "Always Imagined" (Playfair Display italic, 96px,
+gold shimmer, slightly larger than prom)
+Line 3: "Begins Here." (DM Sans light, 72px)
+Floating glass panel left:
+"SAY YES TO THE DRESS" vertical text rotated 90deg, gold
+EXCLUSIVE BRIDAL SECTIONS
+"Build Your Wedding Party" Interactive Section:
+A full-width interactive role selector:
+text
+[BRIDE] [MAID OF HONOR] [BRIDESMAID] [FLOWER GIRL] 
+[MOTHER OF BRIDE] [MOTHER OF GROOM]
+
+Each role button: large glassmorphism pill
+Selecting a role:
+Smoothly transitions the dress grid below to show
+only that category
+The background orbs shift color to match the role's
+palette (bride = white/ivory, bridesmaids = dusty rose, etc.)
+A glass panel slides in from right showing style notes
+for that role
+"The Edit" — Curated Story Section:
+NOT a grid — a magazine-style editorial layout:
+Alternating full-width sections: image left/text right,
+then text left/image right
+Headlines like: "For the Modern Bride", "The Classic Silhouette",
+"Bohemian Romance"
+Each section: full-bleed image with glassmorphism text overlay
+Parallax scroll on all images
+"SHOP THIS LOOK" CTA on each
+Appointment CTA Banner:
+Full-width cinematic banner:
+Background: deep navy with gold particle shimmer (mini Three.js
+canvas, static, no scroll interaction)
+Headline: "Your Perfect Dress Deserves a Perfect Fitting"
+Subtext: "Book a private bridal consultation at your nearest
+Top 10 boutique."
+CTA: "SCHEDULE YOUR APPOINTMENT" (large GoldButton)
+================================================================
+PAGE 4: /tux — TUXEDO & MENSWEAR
+DESIGN SHIFT
+The tux page breaks from blush tones — it introduces a cooler,
+sharper palette: deep navy, crisp white, and silver/chrome accents
+alongside the brand gold.
+HERO
+Background: sharp editorial — dark studio shot aesthetic
+Color grade: cooler, more contrast than prom/bridal pages
+Headline:
+"The Gentleman's" (DM Sans light)
+"Grand Entrance." (Playfair Display italic, gold)
+Floating glass chip: "New for 2026 Season"
+"MATCH YOUR LOOK" FEATURE
+This is the standout interactive element of this page:
+Full-width two-panel interface:
+Left panel: "HER LOOK" — scrollable dress selector
+Right panel: "HIS LOOK" — tuxedo recommendations
+Interaction flow:
+User browses prom dresses in left panel (same ProductCard
+component, filtered to prom)
+On selecting a dress, right panel animates:
+A loading shimmer sweeps across (300ms)
+3 tuxedo recommendations appear that complement the
+chosen dress's color and style
+An AI-generated style note appears in a gold glass chip:
+"For a [Red Ball Gown], we recommend a Classic Black Tux
+with a matching [Deep Red] pocket square and bow tie."
+Claude API powers this recommendation (simple prompt:
+given this dress description, suggest 3 complementary
+tux configurations)
+Both selections can be added to cart together as a "Couple's
+Package" with a combined price display
+The connecting element:
+Between the two panels: a vertical decorative line with a
+small animated heart icon that pulses. Reinforces the pairing.
+ACCESSORIES SECTION
+Below the main grid, a horizontal scroll section for:
+Bow Ties · Pocket Squares · Cufflinks · Dress Shirts · Shoes · Suspenders
+Each accessory card: 200×200px square, glassmorphism, product
+image, name, price, "ADD TO CART" on hover.
+================================================================
+PAGE 5: /shop — MASTER SHOPPING PAGE
+HERO (minimal — this is a utility page, not editorial)
+Compact hero: 40vh, not full viewport
+Headline: "THE COLLECTION"
+Subtitle: "10,000+ styles. Your perfect look is here."
+Breadcrumb navigation for SEO
+PRODUCT GRID
+Same ProductCard component as /prom with additional features:
+"SALE" badge variant (blush ribbon corner badge)
+"NEW" badge variant (gold dot + text)
+"EXCLUSIVE" badge variant (purple shimmer border)
+Sort bar: Most Popular | New Arrivals | Price Low-High |
+Price High-Low | Designer A-Z
+Infinite scroll with a smooth skeleton loader transition
+(not pagination — no hard page breaks)
+"Recently Viewed" rail at top (persisted in localStorage)
+CART DRAWER
+Slides in from right edge, 420px wide, full-height:
+Glassmorphism panel with heavy blur
+Header: "YOUR BAG (3)" with animated item count badge
+Item list: product thumbnail, name, designer, color, size,
+quantity stepper, remove button
+On item remove: card slides left with opacity fade (not
+instant disappear)
+Order Summary section:
+Subtotal
+Estimated shipping (calculated)
+Promo code field with animated validate state
+Total in larger gold text
+"CHECKOUT" button: GoldButton full-width, pulse animation
+when cart has items
+"CONTINUE SHOPPING" ghost link
+Below checkout: trust badges row:
+Secure Checkout ·  Free Shipping $150+ · ↩ 30-Day Returns
+CHECKOUT FLOW (3-step, modal or dedicated page /checkout)
+Step indicator at top — three nodes connected by a line:
+[1 BAG] ——— [2 SHIPPING] ——— [3 PAYMENT]
+Currently active node: gold filled circle
+Completed node: gold checkmark
+Upcoming node: white outline
+Step 1 — Review Cart:
+Animated review of all items, editable quantities, promo code
+Step 2 — Shipping:
+Glassmorphism form:
+Full Name, Email, Phone (with country code selector)
+Address with Google Places autocomplete
+Shipping method selector: 3 options as large radio cards:
+Standard (5-7 days) · Free
+Express (2-3 days) · $12.99
+Overnight · $24.99
+Each option: glassmorphism card, selected state has gold border
+Step 3 — Payment:
+Stripe Elements embedded in glassmorphism card
+Card number, expiry, CVV fields styled to match design system
+"PAY $[TOTAL]" button
+Security note: "256-bit SSL encrypted · Never stored"
+Apple Pay / Google Pay buttons above main form if available
+Order Confirmation page:
+Full-screen moment: dark background, animated gold confetti
+burst from center (Framer Motion custom particles, 80 pieces)
+Animated checkmark draws itself (SVG stroke animation)
+"YOUR ORDER IS CONFIRMED" in Playfair Display italic gold
+Order number, summary, and email confirmation note
+Two CTAs: "TRACK MY ORDER" + "CONTINUE SHOPPING"
+================================================================
+PAGE 6: /virtual-try-on — AI VIRTUAL TRY-ON
+PAGE CONCEPT
+This page should feel like walking into a futuristic fitting room.
+The UI is interactive and spatial — not a flat form.
+HERO (compact, 50vh)
+Background: animated gradient mesh in gold/blush/dark
+Headline: "See Your Dream Look"
+Subtitle: "Upload a photo. Pick a dress. See the magic."
+Animated mockup: a phone frame floats center,
+CSS 3D transform rotateY(-15deg) rotateX(5deg),
+showing a before/after dress overlay demo on loop
+MAIN INTERFACE LAYOUT
+Three-column layout (collapses to single column on mobile):
+Column 1 — CHOOSE YOUR PHOTO (33%):
+Glassmorphism card:
+Large upload zone with animated border (dashed gold border
+that does a running-dash animation)
+Drag & drop with visual feedback: on drag-over, border
+becomes solid gold, background shifts slightly lighter
+"UPLOAD PHOTO" button + "USE CAMERA" button
+After upload: photo preview with a gentle entrance animation
+(scale 0.9→1, opacity 0→1)
+Photo guidelines: "For best results, stand facing forward
+in good lighting" — shown as small illustrated tips
+Column 2 — PICK YOUR DRESS (33%):
+Glassmorphism card:
+Search/filter field at top (same filter system as shop)
+Scrollable dress grid (2-column, compact ProductCard variant)
+Selected dress gets a gold ring border + "✓ SELECTED" overlay
+"Browse Full Collection" link to /shop
+Column 3 — YOUR LOOK (33%):
+This is the result panel.
+Before selection: placeholder state with sparkle animation
+and copy: "Select a photo and dress to see your look"
+After both selected: YouCam SDK renders here, or fallback:
+CSS composite of user photo + dress overlay with
+mix-blend-mode: multiply and opacity controls
+Below result:
+Aria style tip card (glassmorphism, blush tint):
+Calls Claude API with prompt:
+"The customer is trying on a [dress name] in [color]
+with [silhouette]. Suggest 3 accessories and a makeup
+palette that would complement this look perfectly.
+Keep it fun and encouraging, 2–3 sentences max."
+Response streams into the card with animated cursor
+"SHARE YOUR LOOK" row: Instagram, TikTok, Pinterest icons
+"ADD THIS DRESS TO CART" GoldButton
+"SAVE TO WISHLIST" GhostButton
+BOTTOM SECTION — HOW IT WORKS
+Three large numbered steps with animated icons:
+"Upload Your Photo" → camera icon draws in with SVG stroke animation
+"Choose Your Dress" → dress icon rotates in
+"See Your Look" → sparkle burst animation
+Each step: glassmorphism card, entrance animation on scroll
+================================================================
+PAGE 7: /appointments — BOOKING PAGE
+CONCEPT
+This should feel like booking an exclusive private event,
+not filling out a DMV form. Every interaction is deliberate
+and elegant.
+HERO (60vh, atmospheric)
+Background: slow parallax image, warm boutique interior feel
+Overlay: dark gradient
+Headline:
+Eyebrow: "PRIVATE CONSULTATIONS"
+H1: "Your Perfect Fitting" (Playfair Display, 72px)
+H2: "Starts With a Visit." (italic, gold shimmer)
+Subtext: "Our expert stylists will help you find the one.
+By appointment at select locations."
+BOOKING FORM
+NOT a standard web form — styled as an elegant questionnaire.
+Each question fades in sequence as the user progresses
+(conversational form UX, one question at a time):
+Step 1 — Who's Coming?
+First Name, Last Name (side by side)
+Email Address
+Phone Number
+Progress: "1 of 5"
+"NEXT →" GoldButton
+Step 2 — What's The Occasion?
+Large illustrated selection cards (not radio buttons):
+text
+[ PROM] [ BRIDAL] [ PAGEANT] 
+[ EVENING] [ QUINCEAÑERA] [ TUXEDO]
+
+Each card: glassmorphism, 160×160px, icon + label
+Selected state: gold border, light gold background fill
+"NEXT →" / "← BACK" navigation
+Step 3 — Choose Your Store:
+Interactive map (same component as /stores page) with
+clickable store pins — selecting a pin:
+Flies the map to that location (Mapbox flyTo animation)
+Shows store card with details
+Sets that store as selected (gold highlighted card)
+"NEXT →" / "← BACK" navigation
+Step 4 — Pick Your Date & Time:
+Custom calendar component (NOT a native date input):
+Month view with glassmorphism styling
+Available dates: white text, hoverable, gold on hover
+Unavailable dates: muted, 40% opacity, not clickable
+Selected date: gold filled circle
+After selecting date, time slots animate in below:
+Row of glassmorphism pill buttons:
+10:00am · 11:00am · 1:00pm · 2:00pm · 3:00pm · 4:00pm
+Booked slots: muted + "BOOKED" label
+"NEXT →" / "← BACK" navigation
+Step 5 — Final Details:
+Party size selector (1–10+, custom pill stepper)
+Special requests textarea (glassmorphism,
+character count bottom-right, auto-resize)
+How did you hear about us? (dropdown)
+"CONFIRM BOOKING" GoldButton (full-width, with shimmer animation)
+CONFIRMATION STATE
+After submit:
+Form slides down and off screen
+Full replacement animation:
+A large animated calendar checkmark draws in (SVG stroke)
+Headline: "You're Booked! ✦"
+Details card: date, time, store, occasion in a glassmorphism panel
+"Add to Calendar" buttons: Google | Apple | Outlook
+"We'll send a confirmation to [email]" note
+CTA: "Browse Dresses While You Wait →" links to /shop
+================================================================
+PAGE 8: /stores — FIND YOUR STORE
+LAYOUT
+Split-screen layout (50/50, stacks to single column mobile):
+Left: interactive map (full height of viewport)
+Right: scrollable store list panel (glassmorphism background)
+THE MAP (Left 50%)
+Mapbox GL JS with custom styling:
+Map style: dark custom style (Mapbox dark, but with navy
+tones to match brand — #0A0A14 base, roads in rgba gold)
+Custom markers: NOT default pins — use a custom SVG:
+A crown icon (brand motif) in champagne gold, 32×40px,
+with a subtle drop shadow
+HQ marker (Asheville): slightly larger crown (40×50px),
+gold fill with white outline, subtle pulsing ring animation:
+css
+@keyframes markerPulse {
+  0% { box-shadow: 0 0 0 0 rgba(212,175,114,0.4); }
+  70% { box-shadow: 0 0 0 20px rgba(212,175,114,0); }
+  100% { box-shadow: 0 0 0 0 rgba(212,175,114,0); }
+}
+
+
+On marker hover: popup card rises from pin with store name
+city/state in glassmorphism mini card
+On marker click: flies map to location + expands popup to
+full store card, simultaneously highlights the store card
+in the right panel with a gold glow + smooth scroll to it
+Map controls: zoom +/-, "Reset View" button (custom styled)
+STORE LIST PANEL (Right 50%)
+Header section:
+"FIND YOUR STORE" eyebrow
+Heading: "50+ Boutiques Nationwide"
+Search input: glassmorphism, placeholder "Search by city,
+state, or zip...", magnifier icon, clear button
+Region filter pills:
+[ALL] [NORTHEAST] [SOUTHEAST] [SOUTH] [MIDWEST]
+Active pill: gold fill
+"USE MY LOCATION" button: location pin icon + text,
+on click triggers geolocation, sorts stores by distance,
+shows distance badge on each card
+Store Cards:
+Each card (full width of right panel, stacked):
+Glassmorphism card, border-radius: 16px
+Hover: gold border glow, subtle lift
+Layout:
+Left: Color-coded region dot + store name (Playfair Display 18px)
+Address (DM Sans 14px, muted)
+City, State ZIP
+Right: Phone (if available), else "Call for hours" muted text
+Two buttons:
+[GET DIRECTIONS ↗] (opens googleMapsUrl new tab)
+[CONTACT STORE] (routes to /contact?store=[name])
+HQ Card (Best Bride Prom & Tux — Merle Norman of Asheville):
+Rendered FIRST, always visible regardless of filter/search
+Special treatment:
+Slightly taller card with gold gradient border
+(animated, rotating gradient)
+"TOP 10 HQ ✦" badge: gold pill, top-right corner
+Additional info: "Flagship Location · Full Designer Showroom"
+Three buttons: GET DIRECTIONS + CONTACT STORE + BOOK APPOINTMENT
+Empty state (no search results):
+Animated illustration (SVG map pin with question mark)
+Copy: "No stores found in that area yet."
+CTA: "Shop Online Instead →"
+BOTTOM SECTION — BECOME A PARTNER
+Full-width glassmorphism banner:
+Headline: "Own a Boutique?"
+Subtext: "Join the Top 10 Partner Network and access
+10,000+ styles at wholesale pricing."
+CTA: "LEARN ABOUT PARTNERSHIP →" routes to /vendor/login
+================================================================
+PAGE 9: /about — OUR STORY
+CONCEPT
+The about page is a long-form editorial piece — like reading
+a luxury brand's coffee table book online. Heavy on
+storytelling, light on UI clutter.
+HERO
+Full-viewport, split diagonally:
+Left 60%: large editorial image (boutique interior,
+team, or brand lifestyle shot — picsum placeholder)
+Right 40%: pure dark background with centered text:
+Eyebrow: "THE TOP 10 STORY"
+H1: "We Started With" (DM Sans light)
+"One Belief." (Playfair Display italic gold)
+Subtext: "Every girl deserves to feel extraordinary."
+BRAND STORY SECTION — PARALLAX SCROLL NARRATIVE
+Five alternating full-width sections (image left/right alternating):
+Each section is triggered by scroll into view:
+Section 1: Origin
+Small headline: "HOW WE BEGAN"
+Body copy about Top 10 Prom's founding and mission
+Pull quote in large Playfair Display italic, gold:
+"Fashion should make you feel something."
+Image: placeholder editorial
+Section 2: The Network
+Headline: "A Family of Boutiques"
+US map illustration (SVG) with gold dots appearing
+one by one as section enters view (staggered, 0.1s each)
+Body copy about the partner network model
+Section 3: The Designers
+Headline: "Curated With Intention"
+Designer name strip (same as landing Act 3)
+Body copy about curation philosophy
+Section 4: The Mission
+Full-width dark section (no image)
+Centered large Playfair Display quote:
+"From the first fitting to the last dance — we're with you."
+Blush text color treatment
+Section 5: The Team
+Headline: "The People Behind Your Perfect Night"
+Team card grid (glassmorphism cards,
+circular photo, name, title)
+If no real team photos: elegant placeholder initials
+in gold on dark circle
+STATS BAR (animated counters)
+Same as landing page stats section:
+10,000+ Dresses · 50+ Partner Stores · 20+ Designers · 20+ Years
+MILESTONE TIMELINE
+Horizontal scroll timeline:
+Container: full-width, overflow-x scroll, snap-to-item
+Each milestone: glassmorphism card (220px wide):
+Year in large gold Playfair Display
+Event in DM Sans
+Decorated with a thin gold vertical line connecting to a dot
+on a central horizontal gold rule
+Drag to scroll (cursor changes to "DRAG" state)
+On mobile: standard horizontal swipe
+================================================================
+PAGE 10: /contact — CONTACT & INQUIRE
+HERO (compact 45vh)
+Headline: "Let's Talk"
+Subtitle: "Questions, partnerships, press, or just a hello —
+we'd love to hear from you."
+HQ info displayed prominently below headline in a
+glassmorphism chip:
+ 800-3 Fairview Rd, Asheville, NC 28803 ·  828-774-5588
+TWO-COLUMN LAYOUT
+Left column (55%) — Contact Form:
+Glassmorphism card:
+Full Name
+Email Address
+Inquiry Type dropdown:
+[General] [Wholesale Inquiry] [Press & Media]
+[Appointment Request] [Store-Specific]
+Store Name field (appears with animation only when
+"Store-Specific" selected, OR pre-filled via ?store=
+query param)
+Subject line
+Message textarea (auto-resize, 200 char min indicator)
+"SEND MESSAGE" GoldButton
+On submit: button transforms to "SENDING..." with spinner,
+then success state: button turns green checkmark +
+"MESSAGE SENT" with a small confetti burst
+Right column (45%) — Info & Map:
+Contact details glassmorphism card:
+Each line animated in stagger on page load
+ Address with "View on Map" link
+ Phone number (click to call on mobile)
+ Email (click to open mail client)
+ Business hours
+Social media row:
+Four glassmorphism icon buttons (Instagram, TikTok,
+Pinterest, YouTube) with platform-specific hover colors
+Mini map embed (Mapbox, 100% width of column,
+200px height, same brand styling as /stores map):
+Single marker at HQ location
+Zoomed to street level
+Click opens full Maps in new tab
+VENDOR INQUIRY CTA
+Full-width section below the two-column form:
+Gold gradient border
+Headline: "Interested in Wholesale?"
+Subtext: "Join our network of 50+ boutiques nationwide."
+Two CTAs: "VENDOR INQUIRY FORM" + "LEARN ABOUT PARTNERSHIP"
+================================================================
+PAGE 11: /login & /register — AUTHENTICATION
+SPLIT-SCREEN AUTH LAYOUT
+Both pages share this layout:
+Left panel (50%):
+Full-height, dark background with the Three.js particle
+canvas (same as landing, but reduced — 400 particles,
+no cloth simulation, just orbs + particles)
+Centered content:
+TOP 10 PROM wordmark in gold
+A large Playfair Display italic quote that rotates
+every 6 seconds (fade transition):
+"Your moment awaits." / "Find the dress of your dreams." /
+"Be unforgettable." / "The collection of a lifetime."
+Three small ProductCard previews fanned out at the
+bottom of this panel (decorative, non-interactive)
+Right panel (50%):
+Glassmorphism form card, centered vertically:
+Login Form:
+"WELCOME BACK" eyebrow (gold, caps)
+"Sign In" heading (Playfair Display, 36px)
+Email input + Password input (with show/hide toggle)
+"Forgot password?" link (blush, right-aligned)
+"SIGN IN" GoldButton (full width)
+Divider: "— or continue with —"
+Google OAuth button (glassmorphism, Google logo + text)
+Bottom: "New here? Create your account →"
+Register Form:
+"JOIN THE CIRCLE" eyebrow
+"Create Your Account" heading
+First Name + Last Name (side by side)
+Email, Password, Confirm Password
+Optional: Date of Birth (for birthday perks)
+Optional: Occasion interest checkboxes (Prom / Bridal / Both)
+Terms checkbox with link
+"CREATE ACCOUNT" GoldButton
+Google OAuth
+Bottom: "Already have an account? Sign in →"
+Form UX details:
+All inputs: glassmorphism styled, NOT standard browser inputs
+On focus: animated gradient border sweeps around field
+(gold for email/name, blush for password)
+Validation: inline, real-time after first blur
+Valid: green checkmark fades in right side
+Invalid: red X + helpful message below field
+(not an alert — inline)
+Password strength meter (register only):
+animated bar below password field,
+color shifts red→yellow→green
+================================================================
+PAGE 12: /dashboard — CUSTOMER PORTAL
+LAYOUT
+Sidebar navigation (260px) + main content area.
+On mobile: bottom navigation tab bar (5 tabs).
+Sidebar:
+TOP 10 PROM logo top
+User avatar (circular, gold ring border) + name +
+member tier badge
+Navigation links with active state (gold left border +
+gold text):
+ Overview
+ My Wishlist
+ My Orders
+ My Appointments
+ My Profile
+ Loyalty & Rewards
+Bottom of sidebar: Aria quick-chat widget (mini version)
+Overview (default landing tab):
+Glassmorphism metric cards row:
+Wishlist Items (count)
+Active Orders (count)
+Upcoming Appointments (count)
+Loyalty Points (count with "= $[value] in rewards" subtext)
+Recent Activity feed:
+Timeline of last 5 actions (order placed, dress saved,
+appointment booked) with timestamps and icons
+"Your Style DNA" section:
+If quiz completed: shows archetype card
+(e.g., "The Romantic — You gravitate toward soft,
+flowing silhouettes and pastel tones.")
+Glassmorphism card with:
+Style archetype name in Playfair Display
+3 color swatches of their preferred palette
+3 small ProductCard thumbnails of recommended dresses
+If quiz not completed:
+"Discover Your Style" CTA with animated sparkle
+Routes to a 5-question style quiz (new overlay/page)
+My Wishlist tab:
+Same ProductCard grid, but with a "REMOVE" button and
+"MOVE TO CART" button on hover
+My Orders tab:
+Order history table (glassmorphism):
+Order #, Date, Items (thumbnail), Status (badge), Total
+Status badges:
+"PROCESSING" (blue), "SHIPPED" (gold),
+"DELIVERED" (green), "RETURNED" (muted)
+Expandable rows: click to see full order details
+"TRACK ORDER" button on shipped orders
+My Appointments tab:
+Upcoming appointments in large glassmorphism cards:
+Store name, date, time, occasion, stylist name
+"RESCHEDULE" + "CANCEL" actions
+Countdown: "Your appointment is in 5 days"
+Past appointments in a collapsed list below
+================================================================
+PAGE 13: /vendor/login & /vendor/dashboard — VENDOR PORTAL
+VENDOR LOGIN PAGE
+Same split-screen layout as customer auth but:
+Left panel: darker, more corporate feel
+Headline: "THE TOP 10 PARTNER NETWORK"
+Subtext about wholesale program
+Partner logos / store name list (scrolling, muted)
+Right panel form:
+"PARTNER LOGIN" heading
+Email + Password + optional Store ID field
+After login: routes to /vendor/dashboard
+VENDOR DASHBOARD
+Professional, data-forward design — still glassmorphism
+and dark luxury but slightly more structured/corporate
+than customer portal. Think Bloomberg Terminal meets Chanel.
+Sidebar navigation:
+ Analytics
+ Inventory
+ Orders
+ Marketing Assets
+ Account Settings
+ Partner Support
+Analytics Tab (default):
+Top row — 4 KPI cards (glassmorphism):
+Total Orders MTD: large number, trend arrow, % vs last month
+Revenue MTD: large gold number
+Top Selling Style: small ProductCard thumbnail + name
+Avg Order Value: number + trend
+Main chart area:
+Two glassmorphism chart panels side by side:
+Left: Line chart — Revenue over last 12 months
+(use recharts library, styled with brand colors:
+line in gold, grid lines in rgba(255,255,255,0.06),
+tooltip in glassmorphism)
+Right: Bar chart — Orders by Occasion category
+(Prom / Bridal / Evening / Pageant — bars in
+gold/blush/purple/white respectively)
+Bottom: "Recent Orders" table (last 10)
+Inventory Tab:
+Full catalog browser with wholesale pricing visible:
+Same filter system as /prom but with additional
+"WHOLESALE PRICE" column visible
+Table view toggle (in addition to grid view):
+Columns: Image | Style # | Designer | Name |
+Retail Price | Wholesale Price | Min Order Qty |
+Available Colors | Stock Status
+Stock Status badges:
+"IN STOCK" (green), "LOW STOCK" (gold),
+"BACKORDERED" (orange), "DISCONTINUED" (muted)
+Bulk order functionality: checkboxes on rows,
+"ADD SELECTED TO ORDER" sticky bar appears at bottom
+when items checked
+Orders Tab:
+Orders table with status management:
+Columns: Order # | Customer | Items | Order Date |
+Status | Total | Actions
+Status dropdown per row (vendor can update fulfillment)
+Clicking an order expands to full order detail view
+Export to CSV button (glassmorphism, top right)
+Marketing Assets Tab:
+Grid of downloadable asset tiles:
+2026 Prom Lookbook PDF
+Bridal Collection Lookbook PDF
+Designer spotlight social media kit
+In-store signage templates
+Email campaign templates
+Each tile: glassmorphism card, asset preview thumbnail,
+file size, "DOWNLOAD" GoldButton
+On click: simulated download with progress animation
+Account Settings Tab:
+Split glassmorphism form:
+Left: Store Information
+(Store Name, Address, Phone, Website, Bio)
+Right: Account Security
+(Email, Password change, Two-factor auth toggle)
+Logo upload: drag & drop zone (same style as virtual try-on)
+Save changes: GoldButton with success state animation
+================================================================
+GLOBAL COMPONENT: ARIA CHAT WIDGET
+TRIGGER BUTTON (bottom-right, all pages)
+Glassmorphism pill: backdrop-filter: blur(16px)
+Gold gradient border (animated rotation)
+"Ask Aria ✦" text + animated sparkle icon
+Unread indicator: small blush dot when Aria has a proactive
+message (e.g., after 30s on site: "Need help finding
+your size?")
+On click: scale 0→1 + chat drawer slides in from right
+CHAT DRAWER (420px wide, full height)
+Header:
+"ARIA ✦" wordmark in gold
+Subtitle: "Your Top 10 Style Concierge"
+Aria avatar: animated gradient circle (not a photo)
+Online indicator: blinking blush dot + "Online Now"
+Minimize (—) and Close (×) controls
+Message area:
+User messages: right-aligned, glassmorphism blush bubble
+Aria messages: left-aligned, glassmorphism dark bubble
+with gold left border accent
+Timestamps: tiny, muted, below each message group
+Typing indicator: three animated gold dots bouncing
+Proactive message on first open:
+Aria says: "Hi there! ✦ I'm Aria, your personal style guide.
+Are you shopping for prom, bridal, or something else?
+I can help you find the perfect look! "
+This message streams in word by word using Claude API stream.
+Quick Reply chips above input:
+Contextual suggested replies as glassmorphism pills:
+Page /prom: "Show me [COLOR] dresses", "What's trending?",
+"Help me find my size"
+Page /bridal: "Bridal gowns under $500", "Book consultation",
+"What designers do you carry?"
+Page /stores: "Find stores near me", "Book at [store name]"
+These change based on current page context.
+Input area:
+Glassmorphism input: "Ask Aria anything..."
+Send button: animated arrow → checkmark on send
+Voice input toggle (scaffold — not fully implemented,
+button present but shows "Coming Soon" tooltip)
+Character limit: 500, shown when approaching
+Aria's Knowledge Base (injected into system prompt):
+text
+You are Aria, Top 10 Prom's AI style concierge. 
+Be warm, encouraging, and stylish — like a best friend 
+who's a fashion expert. Keep responses under 3 sentences 
+unless detailed info is needed. Always end with an 
+actionable next step.
+
+KNOWLEDGE BASE:
+- Store locations: [inject all 9 real store locations with addresses]
+- Designers: Johnathan Kayne, Ashley Lauren, Jessica Angel, 
+  Tiffany Designs, Chandalier LA, 2Cute Prom
+- Occasions served: Prom, Homecoming, Bridal, Tuxedo, 
+  Pageant, Sweet 16, Quinceañera, Evening
+- HQ location: 800-3 Fairview Rd, Asheville, NC 28803
+- Phone: 828-774-5588
+- Appointments: available at select locations, book at /appointments
+- Sizing: standard US sizes 00–30, custom sizing available 
+  in-store with consultation
+- Shipping: free over $150, standard 5-7 days, express available
+- Returns: 30-day returns on unworn items with tags attached
+- Vendor program: wholesale available to licensed boutiques, 
+  inquire at /vendor/login
+- Virtual try-on: available at /virtual-try-on
+- Price range: $149–$2,400 retail, varies by designer
+
+================================================================
+NAVBAR — FINAL DETAILED SPECIFICATION
+DEFAULT STATE (top of page, before scroll)
+Background: transparent
+Logo: "TOP 10 PROM" — Playfair Display, 20px,
+letter-spacing 0.2em, color #D4AF72
+Nav links: DM Sans 11px, letter-spacing 0.2em,
+text-transform uppercase, color rgba(248,244,240,0.8)
+All icons: 20px, color rgba(248,244,240,0.8)
+SCROLLED STATE (after 80px scroll)
+Background transitions to:
+rgba(8,8,15,0.85) + backdrop-filter: blur(20px)
+Bottom border: 1px solid rgba(255,255,255,0.06)
+Transition: all 0.4s ease
+Logo and links slightly brighter
+COLLECTIONS MEGA DROPDOWN
+On hover of "COLLECTIONS" nav link:
+A full-width mega menu drops down (NOT a standard dropdown):
+position: fixed, top: [navbar height], left: 0, right: 0, z-index: 999
+Background: glassmorphism heavy + blur-xl
+Three columns:
+Column 1 — PROM & FORMAL:
+Prom Dresses · Homecoming · Pageant ·
+Evening Gowns · Sweet 16
+Column 2 — BRIDAL:
+Wedding Gowns · Bridesmaid Dresses ·
+Mother of Bride/Groom · Flower Girl
+Column 3 — MENSWEAR:
+Tuxedos · Suits · Accessories
+Far right: a featured dress editorial image
+(300px wide, full height of dropdown)
+with "NEW ARRIVALS" gold
+Continuing from the Navbar mega dropdown — here is the complete remainder of the specification:
+
+text
+## NAVBAR CONTINUED
+
+## RIGHT SIDE ICONS (Navbar)
+Each icon has a glassmorphism tooltip on hover:
+-  Search: 
+  On click: a full-width search bar expands from the right 
+  of the navbar with a smooth width animation (0px → full),
+  backdrop blurs behind it, input auto-focuses,
+  real-time search results appear below in a 
+  glassmorphism dropdown as user types:
+  - Dress results (thumbnail + name + price)
+  - Category results ("Prom Dresses", "Bridal Gowns")
+  - Store results ("Blue Violet Bridal — Westerly, RI")
+  - Press ESC or click outside to collapse
+
+-  Wishlist:
+  On click: slides out a wishlist drawer (same mechanism 
+  as cart drawer) from the right edge
+  Badge count: blush pill, number of saved items
+
+-  Cart:
+  On click: slides out CartDrawer from right edge
+  Badge count: gold pill, number of items in cart
+  When item added: badge animates (scale 1 → 1.4 → 1, 
+  duration 300ms, gold flash)
+
+-  Account:
+  If logged out: shows "SIGN IN" text link
+  If logged in: circular avatar with gold ring border
+  On click: small glassmorphism dropdown:
+    "Welcome, [Name]" header
+    Dashboard · Wishlist · Orders · Appointments · Sign Out
+
+## MOBILE NAVBAR (< 768px)
+- Logo centered
+- Hamburger menu icon right (animated 3-bar → X on open)
+- Cart icon left with badge
+
+### Mobile Menu (full-screen overlay):
+Triggered by hamburger — covers entire viewport:
+- Background: #08080F + noise texture
+- Gold particle animation (100 particles, tsparticles)
+- Navigation links stack vertically, centered:
+  Each link: Playfair Display 36px, white
+  Animates in one by one: x: -40px → 0, opacity 0→1,
+  stagger 0.07s per link
+- Sub-items: DM Sans 14px, muted, appear below parent with 
+  an indent animation
+- Bottom of overlay:
+  Social icons row (gold, 32px)
+  "SIGN IN / MY ACCOUNT" pill button
+  HQ phone number in small gold text
+
+================================================================
+FOOTER — FINAL DETAILED SPECIFICATION
+================================================================
+
+## LAYOUT
+Full-width dark footer. Three distinct zones stacked:
+
+### Zone 1 — The Newsletter Banner
+Full-width glassmorphism band above the main footer:
+Background: subtle gold gradient shimmer (animated, slow)
+Left side:
+- Headline: "Stay in the Loop" (Playfair Display 32px)
+- Subtext: "New arrivals, exclusive events, and style 
+  inspo — straight to your inbox."
+Right side:
+- Email input + "JOIN" GoldButton side by side
+- Under input: "Join 48,000+ already in the circle ✦"
+- Privacy note: 10px, muted — "No spam. Unsubscribe anytime."
+On submit: 
+- Button transforms to spinning loader then gold checkmark
+- Small animated message replaces the form: 
+  "You're in! ✦ Welcome to the circle."
+
+### Zone 2 — Main Footer Grid (4 columns)
+
+**Column 1 — Brand:**
+- TOP 10 PROM logo/wordmark
+- Tagline: "Where Every Girl Becomes the Main Character"
+- Social icons (Instagram, TikTok, Pinterest, YouTube):
+  Each: 40×40px glassmorphism circle button
+  Hover: platform-specific color glow
+  (Instagram: pink, TikTok: cyan, Pinterest: red, YouTube: red)
+- HQ address in small muted text:
+  800-3 Fairview Rd, Asheville, NC 28803
+  828-774-5588
+
+**Column 2 — Collections:**
+Header: "COLLECTIONS" (DM Sans 11px caps, gold, letter-spacing 0.3em)
+Links (DM Sans 14px, rgba(248,244,240,0.65)):
+- Prom Dresses
+- Homecoming
+- Bridal Gowns
+- Bridesmaids
+- Tuxedos
+- Pageant
+- Evening Gowns
+- Sweet 16 / Quinceañera
+Each link: hover state — color shifts to gold, 
+x: 0 → 4px translation (subtle rightward drift)
+
+**Column 3 — Company:**
+Header: "COMPANY"
+Links:
+- About Us
+- Our Designers
+- Find a Store
+- Partner Network
+- Press & Media
+- Careers
+- Contact Us
+
+**Column 4 — Support:**
+Header: "SUPPORT"
+Links:
+- My Account
+- Size Guide
+- Shipping Info
+- Returns Policy
+- FAQ
+- Book Appointment
+- Virtual Try-On
+
+Below links in Column 4:
+Store hours glassmorphism chip:
+📍 Asheville HQ
+Mon–Sat: 10am–7pm
+Sun: 12pm–5pm
+"Hours may vary by location"
+
+### Zone 3 — Footer Bottom Bar
+Full-width thin bar, separated by a top border 
+`1px solid rgba(255,255,255,0.06)`:
+Left: "© 2026 Top 10 Prom. All rights reserved."
+Center: Payment icons row (Visa, MC, Amex, Apple Pay, 
+Google Pay) — each in a small muted glassmorphism chip
+Right: "Privacy Policy · Terms of Service · Cookie Policy"
+All text: DM Sans 12px, rgba(248,244,240,0.4)
+
+### Footer Entrance Animation:
+All four columns animate in on scroll with stagger:
+x: 0, y: 40px → 0, opacity: 0 → 1
+Each column: 0.15s stagger after previous
+
+================================================================
+DELIVERABLE SEQUENCE (UPDATED FOR v3.0)
+================================================================
+
+Generate in this exact order:
+
+**FOUNDATION LAYER:**
+1. Complete annotated file structure listing (v3.0)
+2. `package.json` — all dependencies with exact version numbers
+3. `.env.example` — every environment variable with descriptions
+4. `tailwind.config.ts` — full theme extension with brand tokens
+5. `globals.css` — complete design system:
+   - CSS custom properties (all tokens)
+   - Glassmorphism utility classes
+   - Typography scale
+   - Animation keyframes (shimmer, pulse, markerPulse, 
+     noise, gradient-rotate, curtain, ticker)
+   - Custom cursor styles
+   - Smooth scroll base styles
+   - Noise texture pseudo-element
+6. `/types/index.ts` — ALL TypeScript interfaces:
+   Dress, Vendor, Customer, Order, Appointment, Store, 
+   CartItem, WishlistItem, ChatMessage, StyleDNA, 
+   DesignerProfile, MarketingAsset
+
+**DATA LAYER:**
+7. `/lib/mock-data.ts` — complete mock data:
+   - All 9 real store locations (exact data as specified)
+   - 50 dress objects with realistic data
+   - 6 designer profiles
+   - 10 vendor accounts
+   - Sample orders, appointments, wishlist items
+8. `/lib/supabase.ts` — Supabase client + auth helpers + 
+   role check utilities
+9. `/lib/stripe.ts` — Stripe client + checkout session helpers
+10. `/lib/claude.ts` — Anthropic client + streaming helper + 
+    Aria system prompt with full knowledge base
+11. `/lib/utils.ts` — shared utilities: 
+    formatPrice, formatDate, getRegionColor, 
+    calculateDistance, generateSlug, cn (classnames helper)
+
+**PRIMITIVE UI LAYER:**
+12. `/components/ui/GlassPanel.tsx` — all variants
+13. `/components/ui/Button.tsx` — GoldButton, BlushButton, 
+    GhostButton, IconButton — all with magnetic hover
+14. `/components/ui/Input.tsx` — glassmorphism input with 
+    animated focus border
+15. `/components/ui/Modal.tsx` — base modal with backdrop blur,
+    entrance/exit animations
+16. `/components/ui/Badge.tsx` — all badge variants
+17. `/components/ui/Dropdown.tsx` — glassmorphism dropdown base
+18. `/components/ui/Carousel.tsx` — horizontal scroll carousel 
+    with drag support
+19. `/components/ui/Skeleton.tsx` — loading skeletons styled 
+    to match brand
+20. `/components/ui/Toast.tsx` — notification toasts 
+    (top-right, glassmorphism, auto-dismiss)
+21. `/components/ui/Tooltip.tsx` — glassmorphism tooltip
+22. `/components/animations/ScrollReveal.tsx`
+23. `/components/animations/StaggerContainer.tsx`
+24. `/components/animations/CounterAnimation.tsx`
+25. `/components/animations/TextSplit.tsx` — split-type wrapper
+
+**GLOBAL LAYOUT LAYER:**
+26. `/components/layout/CustomCursor.tsx` — full cursor system
+27. `/components/layout/Navbar.tsx` — complete with mega menu,
+    search expansion, all icon behaviors, mobile menu
+28. `/components/layout/Footer.tsx` — all three zones
+29. `/components/layout/PageTransition.tsx` — AnimatePresence wrapper
+30. `/components/layout/LenisProvider.tsx` — Lenis + GSAP sync
+31. `app/layout.tsx` — root layout wiring everything together
+
+**FEATURE COMPONENTS:**
+32. `/components/shop/ProductCard.tsx` — all states and variants
+33. `/components/shop/ProductGrid.tsx` — with layout animation
+34. `/components/shop/FilterPanel.tsx` — all filter types
+35. `/components/shop/QuickViewModal.tsx` — full implementation
+36. `/components/shop/CartDrawer.tsx` — full implementation
+37. `/components/shop/CartContext.tsx` — Zustand cart store
+38. `/components/shop/WishlistContext.tsx` — Zustand wishlist store
+39. `/components/chat/ChatWidget.tsx` — trigger button
+40. `/components/chat/ChatDrawer.tsx` — full drawer UI
+41. `/components/chat/MessageBubble.tsx`
+42. `/components/chat/TypingIndicator.tsx`
+43. `/components/stores/StoreCard.tsx`
+44. `/components/stores/StoreMap.tsx` — Mapbox implementation
+45. `/components/stores/RegionFilter.tsx`
+46. `/components/auth/LoginForm.tsx`
+47. `/components/auth/RegisterForm.tsx`
+48. `/components/auth/VendorLoginForm.tsx`
+49. `/components/dashboard/MetricCard.tsx`
+50. `/components/dashboard/StyleDNACard.tsx`
+51. `/components/dashboard/OrderHistoryTable.tsx`
+52. `/components/dashboard/AppointmentCard.tsx`
+53. `/components/vendor/AnalyticsCharts.tsx` — recharts
+54. `/components/vendor/InventoryTable.tsx`
+55. `/components/vendor/OrderManagementTable.tsx`
+56. `/components/vendor/MarketingAssetGrid.tsx`
+57. `/components/landing/HeroCanvas.tsx` — Three.js scene
+58. `/components/landing/CurtainReveal.tsx`
+59. `/components/landing/Preloader.tsx`
+60. `/components/landing/WelcomeModal.tsx`
+61. `/components/landing/OccasionCard.tsx`
+62. `/components/landing/DesignerStrip.tsx`
+63. `/components/landing/FeatureBlock.tsx`
+64. `/components/appointments/ConversationalForm.tsx`
+65. `/components/appointments/CalendarPicker.tsx`
+66. `/components/appointments/TimeSlotPicker.tsx`
+67. `/components/tryon/UploadZone.tsx`
+68. `/components/tryon/DressSelector.tsx`
+69. `/components/tryon/ResultPanel.tsx`
+70. `/components/tryon/StyleTipCard.tsx` — Claude API powered
+
+**API ROUTES:**
+71. `app/api/chat/route.ts` — Claude streaming, Aria
+72. `app/api/appointments/route.ts` — booking submission
+73. `app/api/checkout/route.ts` — Stripe session creation
+74. `app/api/checkout/webhook/route.ts` — Stripe webhook handler
+75. `app/api/contact/route.ts` — contact form submission
+76. `app/api/newsletter/route.ts` — newsletter signup
+77. `app/api/tryon/suggest/route.ts` — Claude style tip endpoint
+78. `app/api/tux/match/route.ts` — Claude tux pairing endpoint
+
+**MIDDLEWARE & AUTH:**
+79. `middleware.ts` — route protection:
+    - /dashboard → redirect to /login if no session
+    - /vendor/dashboard → redirect to /vendor/login 
+      if no session OR role !== 'vendor'
+
+**PAGES (in this order):**
+80. `app/page.tsx` — Landing (uses all landing components)
+81. `app/prom/page.tsx`
+82. `app/bridal/page.tsx`
+83. `app/tux/page.tsx`
+84. `app/shop/page.tsx`
+85. `app/shop/[productId]/page.tsx`
+86. `app/virtual-try-on/page.tsx`
+87. `app/appointments/page.tsx`
+88. `app/stores/page.tsx`
+89. `app/about/page.tsx`
+90. `app/contact/page.tsx`
+91. `app/login/page.tsx`
+92. `app/register/page.tsx`
+93. `app/dashboard/page.tsx`
+94. `app/vendor/login/page.tsx`
+95. `app/vendor/dashboard/page.tsx`
+96. `app/checkout/page.tsx`
+97. `app/checkout/confirmation/page.tsx`
+98. `app/not-found.tsx` — custom 404:
+    Dark luxury 404 page:
+    Large "404" in Playfair Display, gold, 200px
+    "Lost in the Collection?" subheading
+    Three CTA cards: 
+    "Back to Prom" · "Explore Bridal" · "Shop All"
+    Three.js particle canvas in background
+
+**FINAL FILES:**
+99. `next.config.ts` — image domains, headers
+100. `vercel.json` — deployment config
+101. `README.md` — complete setup guide with:
+    - Prerequisites
+    - Environment variable descriptions and where to get each key
+    - Local development setup steps
+    - Database schema setup (Supabase SQL)
+    - Stripe webhook setup
+    - Mapbox token setup
+    - Image replacement guide
+    - Deployment to Vercel steps
+
+================================================================
+SUPABASE DATABASE SCHEMA
+================================================================
+
+Generate SQL migration file at `/supabase/migrations/001_initial.sql`:
+
+```sql
+-- Users extension (extends Supabase auth.users)
+CREATE TABLE public.profiles (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  first_name TEXT,
+  last_name TEXT,
+  email TEXT,
+  phone TEXT,
+  date_of_birth DATE,
+  role TEXT DEFAULT 'customer' CHECK (role IN ('customer', 'vendor', 'admin')),
+  shopping_intent TEXT,
+  loyalty_points INTEGER DEFAULT 0,
+  style_archetype TEXT,
+  preferred_colors TEXT[],
+  preferred_occasions TEXT[],
+  avatar_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Vendors (extends profiles for role=vendor)
+CREATE TABLE public.vendors (
+  id UUID REFERENCES public.profiles(id) PRIMARY KEY,
+  store_name TEXT NOT NULL,
+  store_address TEXT,
+  store_city TEXT,
+  store_state TEXT,
+  store_zip TEXT,
+  store_phone TEXT,
+  store_website TEXT,
+  store_bio TEXT,
+  logo_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  joined_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Dresses (product catalog)
+CREATE TABLE public.dresses (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  designer TEXT NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL,
+  wholesale_price DECIMAL(10,2),
+  colors TEXT[],
+  sizes TEXT[],
+  occasions TEXT[],
+  silhouette TEXT,
+  neckline TEXT,
+  embellishment TEXT,
+  image_urls TEXT[],
+  is_featured BOOLEAN DEFAULT false,
+  is_new BOOLEAN DEFAULT false,
+  is_sale BOOLEAN DEFAULT false,
+  is_exclusive BOOLEAN DEFAULT false,
+  stock_status TEXT DEFAULT 'in_stock' 
+    CHECK (stock_status IN ('in_stock','low_stock','backordered','discontinued')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Wishlist items
+CREATE TABLE public.wishlist_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  dress_id UUID REFERENCES public.dresses(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, dress_id)
+);
+
+-- Orders
+CREATE TABLE public.orders (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  customer_id UUID REFERENCES public.profiles(id),
+  vendor_id UUID REFERENCES public.vendors(id),
+  stripe_payment_intent_id TEXT,
+  status TEXT DEFAULT 'processing' 
+    CHECK (status IN ('processing','confirmed','shipped','delivered','returned','cancelled')),
+  items JSONB NOT NULL,
+  subtotal DECIMAL(10,2),
+  shipping_cost DECIMAL(10,2),
+  total DECIMAL(10,2),
+  shipping_address JSONB,
+  tracking_number TEXT,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Appointments
+CREATE TABLE public.appointments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  customer_id UUID REFERENCES public.profiles(id),
+  store_id INTEGER NOT NULL,
+  store_name TEXT NOT NULL,
+  occasion TEXT NOT NULL,
+  appointment_date DATE NOT NULL,
+  appointment_time TIME NOT NULL,
+  party_size INTEGER DEFAULT 1,
+  special_requests TEXT,
+  status TEXT DEFAULT 'confirmed' 
+    CHECK (status IN ('confirmed','completed','cancelled','no_show')),
+  how_heard TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Newsletter subscribers
+CREATE TABLE public.newsletter_subscribers (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  subscribed_at TIMESTAMPTZ DEFAULT NOW(),
+  is_active BOOLEAN DEFAULT true
+);
+
+-- RLS Policies
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wishlist_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
+
+-- Profiles: users can only read/update their own
+CREATE POLICY "Users can view own profile" ON public.profiles
+  FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON public.profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+-- Wishlist: users can manage their own
+CREATE POLICY "Users manage own wishlist" ON public.wishlist_items
+  FOR ALL USING (auth.uid() = user_id);
+
+-- Orders: customers see own, vendors see their store's orders
+CREATE POLICY "Customers view own orders" ON public.orders
+  FOR SELECT USING (auth.uid() = customer_id);
+
+-- Appointments: users see own
+CREATE POLICY "Users view own appointments" ON public.appointments
+  FOR ALL USING (auth.uid() = customer_id);
+
+-- Dresses: public read
+CREATE POLICY "Public dress catalog" ON public.dresses
+  FOR SELECT USING (true);
+ALTER TABLE public.dresses ENABLE ROW LEVEL SECURITY;
+
+================================================================
+ENVIRONMENT VARIABLES (.env.example)
+bash
+# ── SUPABASE ──────────────────────────────────────────────────
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+# Get these from: https://supabase.com/dashboard → Project Settings → API
+
+# ── STRIPE ────────────────────────────────────────────────────
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+# Get these from: https://dashboard.stripe.com/test/apikeys
+# Webhook secret: stripe listen --forward-to localhost:3000/api/checkout/webhook
+
+# ── ANTHROPIC (ARIA CHATBOT + STYLE TIPS) ─────────────────────
+ANTHROPIC_API_KEY=sk-ant-...
+# Get from: https://console.anthropic.com/account/keys
+
+# ── MAPBOX (STORE LOCATOR MAP) ────────────────────────────────
+NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1...
+# Get from: https://account.mapbox.com/access-tokens/
+
+# ── RESEND (EMAIL CONFIRMATIONS) ──────────────────────────────
+RESEND_API_KEY=re_...
+RESEND_FROM_EMAIL=noreply@top10prom.com
+# Get from: https://resend.com/api-keys
+
+# ── PERFECT CORP (VIRTUAL TRY-ON) ─────────────────────────────
+NEXT_PUBLIC_PERFECTCORP_API_KEY=your_key_here
+# Get from: https://developer.perfectcorp.com
+# Leave blank to use fallback CSS overlay demo
+
+# ── GOOGLE OAUTH (SUPABASE SOCIAL LOGIN) ──────────────────────
+# Configure in Supabase Dashboard → Authentication → Providers → Google
+# Add your Google Cloud OAuth credentials there directly
+
+# ── SITE CONFIG ───────────────────────────────────────────────
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_NAME=Top 10 Prom
+
+================================================================
+IMPORTANT FINAL IMPLEMENTATION NOTES
+COMPONENT PHILOSOPHY: Every component is a design system
+citizen — it must accept className props for extension,
+support all GlassPanel variants, and use CSS custom
+properties for all colors so theming is possible.
+ANIMATION PERFORMANCE: All Framer Motion animations use
+will-change: transform only while animating, removed
+after. All Three.js render loops use delta time.
+GSAP ScrollTrigger instances stored in a ref array and
+killed in useEffect cleanup. No animation runs on
+elements outside the viewport.
+ACCESSIBILITY:
+All interactive elements: keyboard navigable
+All images: meaningful alt text
+Color contrast: WCAG AA minimum on all text
+Focus rings: visible, custom gold ring style
+outline: 2px solid #D4AF72, outline-offset: 2px
+Reduced motion: all animations respect
+prefers-reduced-motion: reduce — scale back to
+simple opacity transitions only
+ARIA labels on all icon buttons
+Chat widget: full keyboard navigation support
+LOADING STATES: Every async operation has a skeleton or
+spinner — no bare loading states. Skeletons use the
+brand shimmer animation.
+ERROR STATES: Every API call has a glassmorphism error
+card with a retry button. Forms show toast notifications
+on server errors.
+SEO: Every page has:
+Unique <title> and <meta description>
+Open Graph tags (og:title, og:description, og:image)
+Twitter card meta
+Canonical URL
+Structured data (JSON-LD) on product pages
+IMAGE SWAP PROTOCOL: When client provides real images,
+replace all picsum.photos URLs in mock-data.ts with
+paths under /public/images/[category]/[filename].
+Use Next.js <Image> component everywhere with
+explicit width/height to prevent CLS.
+NO LOREM IPSUM: All placeholder copy must be realistic
+and on-brand — real designer names, real style
+terminology, real fashion copy tone.
+Begin generating now. Follow the deliverable sequence exactly.
+Produce complete, production-grade code for every single file.
+Do not skip any file. Do not use placeholder stubs.
+This is a world-class site — every detail matters.
+text
+
+***
+
+## What's New in v3.0 vs Previous Versions
+
+Here's a quick summary of everything this final pass added or elevated:
+
+| Area | What Was Upgraded |
+|---|---|
+| **Global Systems** | Custom cursor, noise texture overlay, full CSS token system, page transition wipes with brand logo flash |
+| **Prom Page** | Layered parallax hero, animated filter system with layout animations, featured 2x-height editorial cards, designer spotlight section |
+| **Bridal Page** | Role-based "Build Your Wedding Party" selector, magazine editorial layout, ambient audio toggle |
+| **Tux Page** | Cooler palette differentiation, "Match Your Look" Claude-powered pairing tool with connecting heart animation |
+| **Shop Page** | "Recently Viewed" rail, SALE/NEW/EXCLUSIVE badge variants, infinite scroll, full Stripe checkout flow with Apple/Google Pay |
+| **Try-On Page** | Streaming Claude style tips, spatial 3-column layout, drag-and-drop upload zone |
+| **Appointments** | Conversational one-question-at-a-time form flow, map-integrated store picker, custom calendar component |
+| **Stores Page** | Custom crown SVG markers, HQ pulse animation, geolocation sort, map↔card sync |
+| **About Page** | SVG map with staggered dot reveals, draggable milestone timeline |
+| **Contact Page** | Store name pre-population via query params, mini map embed, vendor inquiry CTA |
+| **Auth Pages** | Rotating quote panel, password strength meter, real-time inline validation |
+| **Dashboards** | Style DNA quiz integration, loyalty tier display, vendor analytics with recharts |
+| **Aria** | Proactive messaging, contextual quick-reply chips that change per page, full knowledge base |
+| **Navbar** | Search expansion, mega dropdown with editorial image, cart badge flash animation |
+| **Footer** | Animated newsletter zone, social platform-specific hover glows, payment icons |
+| **Database** | Complete Supabase schema with RLS policies |
+| **Deliverable sequence** | Fully enumerated 101-file build order ensuring zero dependency errors |
+
+
+
+
