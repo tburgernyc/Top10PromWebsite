@@ -9,7 +9,7 @@ import type { CartItem, ShippingMethod, ShippingOption } from '@/types'
 // ── STRIPE SERVER CLIENT ──────────────────────────────────────
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-02-24.acacia',
   typescript: true,
 })
 
@@ -92,8 +92,8 @@ export async function createPaymentIntent(params: CreatePaymentIntentParams) {
     dressId: item.dress.id,
     dressName: item.dress.name,
     designer: item.dress.designer,
-    color: item.selectedColor.name,
-    size: item.selectedSize,
+    color: item.selected_color,
+    size: item.selected_size,
     quantity: item.quantity,
     price: item.dress.price,
     imageUrl: item.dress.imageUrls[0],

@@ -21,7 +21,7 @@ export function UploadZone({ onUpload, preview, className }: UploadZoneProps) {
   const [error, setError] = useState<string | null>(null)
 
   const onDrop = useCallback(
-    (accepted: File[], rejected: { errors: { message: string }[] }[]) => {
+    (accepted: File[], rejected: { errors: ReadonlyArray<{ message: string; code: string }> }[]) => {
       setIsDragOver(false)
       if (rejected.length > 0) {
         setError('Please upload a JPG, PNG, or WEBP image under 10MB.')

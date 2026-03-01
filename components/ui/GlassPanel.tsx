@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, type ElementType, type ReactNode, type ComponentPropsWithRef } from 'react'
+import { forwardRef, type ElementType, type ReactNode, type HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 // ── TYPES ─────────────────────────────────────────────────────
@@ -10,16 +10,13 @@ type GlowType = 'gold' | 'blush' | 'purple' | 'none'
 type BorderType = 'gold' | 'white' | 'blush' | 'none'
 type RadiusType = 'card' | 'chip' | 'modal' | 'sm' | 'full'
 
-interface GlassPanelProps {
+interface GlassPanelProps extends HTMLAttributes<HTMLElement> {
   variant?: GlassVariant
   glow?: GlowType
   border?: BorderType
   radius?: RadiusType
-  className?: string
-  children?: ReactNode
   as?: ElementType
   hover?: boolean
-  [key: string]: unknown
 }
 
 // ── STYLE MAPS ────────────────────────────────────────────────
@@ -71,8 +68,9 @@ const GlassPanel = forwardRef<HTMLElement, GlassPanelProps>(
     },
     ref
   ) => {
+    const Tag = Component as ElementType
     return (
-      <Component
+      <Tag
         ref={ref}
         className={cn(
           'transition-all duration-300',
@@ -86,7 +84,7 @@ const GlassPanel = forwardRef<HTMLElement, GlassPanelProps>(
         {...props}
       >
         {children}
-      </Component>
+      </Tag>
     )
   }
 )

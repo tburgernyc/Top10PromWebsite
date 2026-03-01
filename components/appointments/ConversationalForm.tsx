@@ -221,7 +221,7 @@ function ContactStep({
 // ── CONFIRMATION STEP ──────────────────────────────────────────
 
 function ConfirmStep({ data }: { data: BookingData }) {
-  const store = STORES.find(s => s.id === data.storeId)
+  const store = STORES.find(s => String(s.id) === data.storeId)
   const occasion = OCCASIONS.find(o => o.id === data.occasion)
 
   return (

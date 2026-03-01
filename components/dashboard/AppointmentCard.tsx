@@ -10,7 +10,7 @@ import type { Appointment, AppointmentStatus } from '@/types'
 
 // ── STATUS BADGE VARIANT MAP ──────────────────────────────────
 
-const statusVariant: Record<AppointmentStatus, string> = {
+const statusVariant: Record<AppointmentStatus, 'processing' | 'confirmed' | 'delivered' | 'cancelled'> = {
   pending: 'processing',
   confirmed: 'confirmed',
   completed: 'delivered',

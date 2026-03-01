@@ -240,6 +240,7 @@ export interface Appointment {
   specialRequests?: string
   status: AppointmentStatus
   howHeard?: string
+  notes?: string
   firstName: string
   lastName: string
   email: string

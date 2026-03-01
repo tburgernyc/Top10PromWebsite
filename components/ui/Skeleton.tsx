@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { cn } from '@/lib/utils'
 
 // ── BASE SKELETON ─────────────────────────────────────────────
@@ -8,13 +9,14 @@ interface SkeletonProps {
   className?: string
   width?: string | number
   height?: string | number
+  style?: React.CSSProperties
 }
 
-export function Skeleton({ className, width, height }: SkeletonProps) {
+export function Skeleton({ className, width, height, style }: SkeletonProps) {
   return (
     <div
       className={cn('skeleton rounded-lg animate-shimmer', className)}
-      style={{ width, height }}
+      style={{ width, height, ...style }}
     />
   )
 }

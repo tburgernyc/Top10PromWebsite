@@ -32,6 +32,7 @@ function StoreMapInner({ stores, selectedStore, onStoreSelect, className }: Stor
 
     const initMap = async () => {
       const mapboxgl = (await import('mapbox-gl')).default
+      // @ts-ignore — mapbox CSS import; types not available for CSS modules
       await import('mapbox-gl/dist/mapbox-gl.css')
 
       mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!

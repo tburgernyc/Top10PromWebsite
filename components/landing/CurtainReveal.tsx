@@ -81,7 +81,7 @@ interface TextCurtainProps {
   children: ReactNode
   className?: string
   delay?: number
-  as?: 'h1' | 'h2' | 'h3' | 'p' | 'span'
+  as?: 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div'
 }
 
 export function TextCurtain({

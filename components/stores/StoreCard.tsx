@@ -207,7 +207,7 @@ export function StoreList({
           <StoreCard
             key={store.id}
             store={store}
-            isSelected={store.id === selectedStoreId}
+            isSelected={String(store.id) === selectedStoreId}
             distanceMiles={distance}
             onSelect={onSelect}
           />
