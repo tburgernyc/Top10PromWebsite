@@ -36,7 +36,7 @@ export function FilteredGrid({ dresses, showLoadMore }: FilteredGridProps) {
         variant="bar"
         className="mb-10"
       />
-      <ProductGrid dresses={filtered} showLoadMore={showLoadMore} />
+      <ProductGrid dresses={filtered} infiniteScroll={showLoadMore} />
     </>
   )
 }

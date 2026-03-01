@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { DRESSES } from '@/lib/mock-data'
 import { formatPrice } from '@/lib/utils'
-import type { Dress } from '@/types'
+import type { Dress, Occasion } from '@/types'
 
 // ── TYPES ─────────────────────────────────────────────────────
 
@@ -29,7 +29,7 @@ export function DressSelector({ selectedDress, onSelect, className }: DressSelec
   const filtered = useMemo(() => {
     let result = [...DRESSES]
     if (activeOccasion !== 'All') {
-      result = result.filter(d => d.occasions.includes(activeOccasion.toLowerCase()))
+      result = result.filter(d => d.occasions.includes(activeOccasion.toLowerCase() as Occasion))
     }
     if (search.trim()) {
       const q = search.toLowerCase()

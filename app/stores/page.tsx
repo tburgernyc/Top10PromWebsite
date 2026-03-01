@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
-import { StoreList } from '@/components/stores/StoreCard'
+import { StoreSection } from '@/components/stores/StoreSection'
 import { STORES } from '@/lib/mock-data'
-import { RegionFilter } from '@/components/stores/RegionFilter'
 import { ChatWidget } from '@/components/chat/ChatWidget'
 
 const StoreMap = dynamic(() => import('@/components/stores/StoreMap'), { ssr: false })
@@ -43,8 +42,7 @@ export default function StoresPage() {
 
           {/* Store list */}
           <div className="lg:w-1/2 flex flex-col px-6 md:px-12 py-6">
-            <RegionFilter className="mb-6" />
-            <StoreList />
+            <StoreSection stores={STORES} />
           </div>
         </div>
       </section>

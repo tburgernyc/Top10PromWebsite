@@ -100,10 +100,10 @@ const MOCK_APPOINTMENTS: Appointment[] = [
 ]
 
 const DASHBOARD_METRICS = [
-  { label: 'Loyalty Points', value: 1240, suffix: ' pts', accent: 'gold' as const },
-  { label: 'Orders', value: 2, accent: 'emerald' as const },
-  { label: 'Wishlist', value: 8, accent: 'blush' as const },
-  { label: 'Upcoming Appts', value: 1, accent: 'purple' as const },
+  { label: 'Loyalty Points', value: 1240, suffix: ' pts', accentColor: 'gold' as const },
+  { label: 'Orders', value: 2, accentColor: 'emerald' as const },
+  { label: 'Wishlist', value: 8, accentColor: 'blush' as const },
+  { label: 'Upcoming Appts', value: 1, accentColor: 'purple' as const },
 ]
 
 // ── TAB NAV ───────────────────────────────────────────────────

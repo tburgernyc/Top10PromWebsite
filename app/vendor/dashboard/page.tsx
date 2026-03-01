@@ -9,34 +9,70 @@ import { InventoryTable } from '@/components/vendor/InventoryTable'
 import { OrderManagementTable } from '@/components/vendor/OrderManagementTable'
 import { MarketingAssetGrid } from '@/components/vendor/MarketingAssetGrid'
 import { cn } from '@/lib/utils'
-import { DRESSES } from '@/lib/mock-data'
+import { DRESSES, marketingAssets } from '@/lib/mock-data'
+import type { Order } from '@/types'
 
 // ── MOCK DATA ──────────────────────────────────────────────────
 
 const VENDOR_METRICS = [
-  { label: 'This Month Revenue', value: 28450, prefix: '$', accent: 'gold' as const, trend: 12 },
-  { label: 'Orders', value: 47, accent: 'emerald' as const, trend: 8 },
-  { label: 'Active Styles', value: 124, accent: 'blush' as const },
-  { label: 'Low Stock Alerts', value: 3, accent: 'purple' as const, trend: -2 },
+  { label: 'This Month Revenue', value: 28450, prefix: '$', accentColor: 'gold' as const, trend: 'up' as const, trendValue: '+12%' },
+  { label: 'Orders', value: 47, accentColor: 'emerald' as const, trend: 'up' as const, trendValue: '+8%' },
+  { label: 'Active Styles', value: 124, accentColor: 'blush' as const },
+  { label: 'Low Stock Alerts', value: 3, accentColor: 'purple' as const, trend: 'down' as const, trendValue: '-2' },
 ]
 
-const MOCK_ORDERS = [
-  { id: 'ORD-2024-001', customer_name: 'Olivia Martinez', customer_email: 'olivia@email.com', created_at: new Date().toISOString(), total_amount: 349, status: 'pending' as const, items: [{ name: 'Midnight Cascade Gown', quantity: 1, price: 349 }] },
-  { id: 'ORD-2024-002', customer_name: 'Isabella Chen', customer_email: 'isabella@email.com', created_at: new Date(Date.now() - 864e5).toISOString(), total_amount: 219, status: 'processing' as const, items: [{ name: 'Golden Hour Sequin Dress', quantity: 1, price: 219 }] },
-  { id: 'ORD-2024-003', customer_name: 'Sophie Williams', customer_email: 'sophie@email.com', created_at: new Date(Date.now() - 2 * 864e5).toISOString(), total_amount: 489, status: 'shipped' as const, items: [{ name: 'Rose Garden A-Line', quantity: 1, price: 489 }] },
-  { id: 'ORD-2024-004', customer_name: 'Emma Johnson', customer_email: 'emma@email.com', created_at: new Date(Date.now() - 3 * 864e5).toISOString(), total_amount: 179, status: 'delivered' as const, items: [{ name: 'Ethereal Tulle Ballgown', quantity: 1, price: 179 }] },
+const MOCK_ORDERS: Order[] = [
+  {
+    id: 'ORD-2024-001',
+    customerId: 'cust_001',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    total: 349,
+    subtotal: 349,
+    shippingCost: 0,
+    status: 'processing',
+    items: [{ dressId: 'd1', dressName: 'Midnight Cascade Gown', designer: 'Johnathan Kayne', imageUrl: '', color: 'Black', size: '6', quantity: 1, price: 349 }],
+    shippingAddress: { fullName: 'Olivia Martinez', email: 'olivia@email.com', phone: '', line1: '', city: '', state: '', zip: '', country: 'US' },
+  },
+  {
+    id: 'ORD-2024-002',
+    customerId: 'cust_002',
+    createdAt: new Date(Date.now() - 864e5).toISOString(),
+    updatedAt: new Date(Date.now() - 864e5).toISOString(),
+    total: 219,
+    subtotal: 219,
+    shippingCost: 0,
+    status: 'confirmed',
+    items: [{ dressId: 'd2', dressName: 'Golden Hour Sequin Dress', designer: 'Ashley Lauren', imageUrl: '', color: 'Gold', size: '4', quantity: 1, price: 219 }],
+    shippingAddress: { fullName: 'Isabella Chen', email: 'isabella@email.com', phone: '', line1: '', city: '', state: '', zip: '', country: 'US' },
+  },
+  {
+    id: 'ORD-2024-003',
+    customerId: 'cust_003',
+    createdAt: new Date(Date.now() - 2 * 864e5).toISOString(),
+    updatedAt: new Date(Date.now() - 2 * 864e5).toISOString(),
+    total: 489,
+    subtotal: 489,
+    shippingCost: 0,
+    status: 'shipped',
+    items: [{ dressId: 'd3', dressName: 'Rose Garden A-Line', designer: 'Jessica Angel', imageUrl: '', color: 'Blush', size: '8', quantity: 1, price: 489 }],
+    shippingAddress: { fullName: 'Sophie Williams', email: 'sophie@email.com', phone: '', line1: '', city: '', state: '', zip: '', country: 'US' },
+  },
+  {
+    id: 'ORD-2024-004',
+    customerId: 'cust_004',
+    createdAt: new Date(Date.now() - 3 * 864e5).toISOString(),
+    updatedAt: new Date(Date.now() - 3 * 864e5).toISOString(),
+    total: 179,
+    subtotal: 179,
+    shippingCost: 0,
+    status: 'delivered',
+    items: [{ dressId: 'd4', dressName: 'Ethereal Tulle Ballgown', designer: 'Tiffany Designs', imageUrl: '', color: 'White', size: '10', quantity: 1, price: 179 }],
+    shippingAddress: { fullName: 'Emma Johnson', email: 'emma@email.com', phone: '', line1: '', city: '', state: '', zip: '', country: 'US' },
+  },
 ]
 
-const VENDOR_INVENTORY = DRESSES.slice(0, 20).map(d => ({
-  id: d.id,
-  name: d.name,
-  designer: d.designer,
-  price: d.price,
-  wholesale_price: d.price * 0.55,
-  stock: Math.floor(Math.random() * 20),
-  is_active: true,
-  image_seed: d.imageSeed,
-}))
+const VENDOR_INVENTORY = DRESSES.slice(0, 20)
 
 // ── TABS ──────────────────────────────────────────────────────
 
@@ -112,7 +148,7 @@ export default function VendorDashboardPage() {
       {activeTab === 'Analytics' && <AnalyticsCharts />}
       {activeTab === 'Orders' && <OrderManagementTable orders={MOCK_ORDERS} />}
       {activeTab === 'Inventory' && <InventoryTable dresses={VENDOR_INVENTORY} />}
-      {activeTab === 'Marketing' && <MarketingAssetGrid />}
+      {activeTab === 'Marketing' && <MarketingAssetGrid assets={marketingAssets} />}
       {activeTab === 'Settings' && (
         <div className="flex flex-col gap-6 max-w-lg">
           <h2 className="font-serif text-2xl text-[var(--white-soft)]">Partner Settings</h2>

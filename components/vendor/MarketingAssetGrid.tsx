@@ -5,8 +5,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/Badge'
-import { GoldButton, GhostButton } from '@/components/ui/Button'
-import { formatDate } from '@/lib/utils'
+import { GhostButton } from '@/components/ui/Button'
 import type { MarketingAsset } from '@/types'
 
 // ── ASSET CARD ─────────────────────────────────────────────────
@@ -21,21 +20,20 @@ function AssetCard({ asset, onDownload, onCopyLink }: AssetCardProps) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
-    if (asset.url) {
-      await navigator.clipboard.writeText(asset.url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
+    await navigator.clipboard.writeText(asset.downloadUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
     onCopyLink?.(asset)
   }
 
-  const typeIcon = {
-    image: '🖼',
-    video: '🎬',
-    pdf: '📄',
-    banner: '🎨',
+  const categoryIcon: Record<string, string> = {
+    lookbook: '📖',
     social: '📱',
-  }[asset.type] ?? '📁'
+    signage: '🎨',
+    email: '📧',
+    other: '📁',
+  }
+  const typeIcon = categoryIcon[asset.category] ?? '📁'
 
   return (
     <motion.div
@@ -46,10 +44,10 @@ function AssetCard({ asset, onDownload, onCopyLink }: AssetCardProps) {
     >
       {/* Preview */}
       <div className="relative aspect-video bg-[var(--glass-medium)] overflow-hidden">
-        {asset.thumbnail || asset.url ? (
+        {asset.thumbnailUrl ? (
           <Image
-            src={asset.thumbnail ?? asset.url ?? `https://picsum.photos/seed/${asset.id}/400/225`}
-            alt={asset.name}
+            src={asset.thumbnailUrl}
+            alt={asset.title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -60,10 +58,10 @@ function AssetCard({ asset, onDownload, onCopyLink }: AssetCardProps) {
           </div>
         )}
 
-        {/* Type badge overlay */}
+        {/* Category badge overlay */}
         <div className="absolute top-2 left-2">
           <Badge variant="glass" size="sm">
-            {asset.type}
+            {asset.category}
           </Badge>
         </div>
 
@@ -100,16 +98,17 @@ function AssetCard({ asset, onDownload, onCopyLink }: AssetCardProps) {
 
       {/* Info */}
       <div className="px-4 pb-4 flex flex-col gap-2">
-        <h4 className="text-sm font-sans text-[var(--white-soft)] line-clamp-1">{asset.name}</h4>
-        <div className="flex items-center justify-between">
+        <h4 className="text-sm font-sans text-[var(--white-soft)] line-clamp-1">{asset.title}</h4>
+        <p className="text-[10px] text-[var(--white-soft)]/40 font-sans line-clamp-2 leading-relaxed">
+          {asset.description}
+        </p>
+        <div className="flex items-center justify-between mt-1">
           <span className="text-[10px] text-[var(--white-soft)]/40 font-sans">
-            {asset.dimensions ?? ''} {asset.file_size ? `· ${asset.file_size}` : ''}
+            {asset.fileType} {asset.fileSize ? `· ${asset.fileSize}` : ''}
           </span>
-          {asset.season && (
-            <span className="text-[10px] text-[var(--gold)]/60 font-sans font-semibold uppercase tracking-[0.1em]">
-              {asset.season}
-            </span>
-          )}
+          <span className="text-[10px] text-[var(--gold)]/60 font-sans font-semibold uppercase tracking-[0.1em]">
+            {asset.year}
+          </span>
         </div>
       </div>
     </motion.div>
@@ -125,7 +124,7 @@ interface MarketingAssetGridProps {
   onCopyLink?: (asset: MarketingAsset) => void
 }
 
-const ASSET_TYPES = ['all', 'image', 'video', 'pdf', 'banner', 'social']
+const ASSET_CATEGORIES = ['all', 'lookbook', 'social', 'signage', 'email', 'other'] as const
 
 export function MarketingAssetGrid({
   assets,
@@ -133,14 +132,16 @@ export function MarketingAssetGrid({
   onDownload,
   onCopyLink,
 }: MarketingAssetGridProps) {
-  const [typeFilter, setTypeFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
   const filtered = assets.filter((a) => {
-    const matchesType = typeFilter === 'all' || a.type === typeFilter
+    const matchesCategory = categoryFilter === 'all' || a.category === categoryFilter
     const matchesSearch =
-      !searchQuery || a.name.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesType && matchesSearch
+      !searchQuery ||
+      a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.description.toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesCategory && matchesSearch
   })
 
   const handleDownloadAll = () => {
@@ -152,19 +153,19 @@ export function MarketingAssetGrid({
       {/* Header + controls */}
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
         <div className="flex gap-2 flex-wrap">
-          {ASSET_TYPES.map((t) => (
+          {ASSET_CATEGORIES.map((c) => (
             <button
-              key={t}
-              onClick={() => setTypeFilter(t)}
+              key={c}
+              onClick={() => setCategoryFilter(c)}
               className={cn(
                 'px-3 py-1.5 rounded-full text-xs font-sans font-semibold tracking-[0.1em] uppercase border transition-all',
-                typeFilter === t
+                categoryFilter === c
                   ? 'bg-[var(--glass-gold)] border-gold/40 text-[var(--gold)]'
                   : 'bg-[var(--glass-light)] border-white/10 text-[var(--white-soft)]/50 hover:border-gold/25'
               )}
               style={{ cursor: 'none' }}
             >
-              {t}
+              {c}
             </button>
           ))}
         </div>

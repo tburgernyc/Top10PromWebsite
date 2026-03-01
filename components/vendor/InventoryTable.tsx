@@ -68,14 +68,14 @@ export function InventoryTable({
     }
 
     if (stockFilter) {
-      result = result.filter((d) => d.stock_status === stockFilter)
+      result = result.filter((d) => d.stockStatus === stockFilter)
     }
 
     result.sort((a, b) => {
       let av: any, bv: any
       if (sortCol === 'name') { av = a.name; bv = b.name }
-      else if (sortCol === 'price') { av = a.sale_price ?? a.price; bv = b.sale_price ?? b.price }
-      else { av = a.stock_quantity ?? 0; bv = b.stock_quantity ?? 0 }
+      else if (sortCol === 'price') { av = a.price; bv = b.price }
+      else { av = 0; bv = 0 }
 
       if (av < bv) return sortDir === 'asc' ? -1 : 1
       if (av > bv) return sortDir === 'asc' ? 1 : -1
@@ -230,9 +230,9 @@ export function InventoryTable({
                       <span className="text-sm font-serif text-[var(--white-soft)]">
                         {formatPrice(dress.price)}
                       </span>
-                      {dress.wholesale_price && (
+                      {dress.wholesalePrice && (
                         <span className="text-xs text-[var(--gold)]/60 font-sans">
-                          {formatPrice(dress.wholesale_price)} wholesale
+                          {formatPrice(dress.wholesalePrice)} wholesale
                         </span>
                       )}
                     </div>
@@ -242,17 +242,17 @@ export function InventoryTable({
                   <td className="px-4 py-3">
                     <span className={cn(
                       'text-sm font-sans font-semibold',
-                      (dress.stock_quantity ?? 0) > 10 ? 'text-emerald-400'
-                      : (dress.stock_quantity ?? 0) > 0 ? 'text-[var(--gold)]'
+                      dress.stockStatus === 'in_stock' ? 'text-emerald-400'
+                      : dress.stockStatus === 'low_stock' ? 'text-[var(--gold)]'
                       : 'text-red-400'
                     )}>
-                      {dress.stock_quantity ?? 0}
+                      {dress.stockStatus === 'in_stock' ? 'In Stock' : dress.stockStatus === 'low_stock' ? 'Low' : '—'}
                     </span>
                   </td>
 
                   {/* Status */}
                   <td className="px-4 py-3">
-                    <StockBadge status={dress.stock_status ?? 'in_stock'} />
+                    <StockBadge status={dress.stockStatus ?? 'in_stock'} />
                   </td>
 
                   {/* Actions */}
@@ -266,16 +266,16 @@ export function InventoryTable({
                         Edit
                       </button>
                       <button
-                        onClick={() => onToggleActive?.(dress.id, !dress.is_active)}
+                        onClick={() => onToggleActive?.(dress.id, dress.stockStatus === 'discontinued')}
                         className={cn(
                           'text-xs font-sans transition-colors',
-                          dress.is_active
+                          dress.stockStatus !== 'discontinued'
                             ? 'text-emerald-400/60 hover:text-red-400'
                             : 'text-[var(--white-soft)]/30 hover:text-emerald-400'
                         )}
                         style={{ cursor: 'none' }}
                       >
-                        {dress.is_active ? 'Deactivate' : 'Activate'}
+                        {dress.stockStatus !== 'discontinued' ? 'Deactivate' : 'Activate'}
                       </button>
                     </div>
                   </td>

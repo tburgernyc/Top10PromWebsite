@@ -5,15 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { MessageBubble } from '@/components/chat/MessageBubble'
 import { TypingIndicator } from '@/components/chat/TypingIndicator'
-import { GoldButton } from '@/components/ui/Button'
 import { useCursor } from '@/components/layout/CustomCursor'
 import type { ChatMessage } from '@/types'
 
 // Full-screen drawer version of Aria chat (used on /virtual-try-on, /shop)
 
 interface ChatDrawerProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen?: boolean
+  onClose?: () => void
   initialMessage?: string
   context?: string
   pageContext?: string
@@ -28,7 +27,10 @@ const WELCOME: ChatMessage = {
   quickReplies: ['Find my size', 'Suggest similar styles', 'View trending looks', 'Book appointment'],
 }
 
-export function ChatDrawer({ isOpen, onClose, initialMessage, context }: ChatDrawerProps) {
+export function ChatDrawer({ isOpen: isOpenProp, onClose: onCloseProp, initialMessage, context, pageContext }: ChatDrawerProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isOpen = isOpenProp !== undefined ? isOpenProp : internalOpen
+  const onClose = onCloseProp ?? (() => setInternalOpen(false))
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -132,6 +134,7 @@ export function ChatDrawer({ isOpen, onClose, initialMessage, context }: ChatDra
   )
 
   return (
+    <>
     <AnimatePresence>
       {isOpen && (
         <>
@@ -230,6 +233,58 @@ export function ChatDrawer({ isOpen, onClose, initialMessage, context }: ChatDra
         </>
       )}
     </AnimatePresence>
+
+    {/* Self-controlled FAB trigger — shown when no external isOpen prop provided */}
+    {isOpenProp === undefined && (
+      <motion.button
+        onClick={() => setInternalOpen((v) => !v)}
+        className={cn(
+          'fixed bottom-6 right-6 z-[85]',
+          'w-14 h-14 rounded-full flex items-center justify-center',
+          'shadow-[0_8px_32px_rgba(0,0,0,0.4)]',
+          'transition-all duration-300',
+          internalOpen
+            ? 'bg-[var(--bg-elevated)] border border-white/15 text-[var(--white-soft)]/70'
+            : 'bg-gradient-to-br from-[var(--gold)] to-[var(--gold-light)] text-[var(--bg-primary)]'
+        )}
+        style={{ cursor: 'none' }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
+        onMouseEnter={() => setCursorState('hover')}
+        onMouseLeave={resetCursor}
+        aria-label={internalOpen ? 'Close Aria chat' : 'Open Aria style concierge'}
+      >
+        <AnimatePresence mode="wait">
+          {internalOpen ? (
+            <motion.svg
+              key="close"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </motion.svg>
+          ) : (
+            <motion.svg
+              key="chat"
+              initial={{ scale: 0.7, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.7, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+            </motion.svg>
+          )}
+        </AnimatePresence>
+        {!internalOpen && (
+          <span className="absolute top-1 right-1 w-3 h-3 rounded-full bg-[var(--blush)] border-2 border-[var(--bg-primary)]" />
+        )}
+      </motion.button>
+    )}
+    </>
   )
 }
 

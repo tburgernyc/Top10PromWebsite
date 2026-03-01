@@ -157,42 +157,54 @@ Color: ${dressDescription.color}
 Silhouette: ${dressDescription.silhouette}
 Designer: ${dressDescription.designer}
 
-Suggest 3 complementary tuxedo configurations that would pair beautifully with this dress. For each, specify a style (e.g., "Classic Black Tuxedo", "Navy Blue Suit", "Ivory Dinner Jacket"), specific accessories (pocket square color/pattern, bow tie or tie description, cufflink suggestion, dress shirt), and why it pairs well.
-
-Also write a brief AI style note in the voice of a warm fashion concierge (1 sentence).
-
-Return ONLY valid JSON in this exact format:
-[
-  {
-    "style": "Classic Black Tuxedo",
-    "accessories": {
-      "pocketSquare": "Deep red folded pocket square",
-      "bowTie": "Deep red silk bow tie",
-      "cufflinks": "Silver round cufflinks",
-      "shirt": "Crisp white wing-collar dress shirt"
-    },
-    "reason": "The classic black creates a timeless contrast with the crimson gown.",
-    "aiNote": "This pairing is like a red carpet moment — bold, classic, and unforgettable. ✦"
-  }
-]`
+Suggest 3 complementary tuxedo configurations that would pair beautifully with this dress. For each, specify a style (e.g., "Classic Black Tuxedo", "Navy Blue Suit", "Ivory Dinner Jacket"), specific accessories (pocket square color/pattern, bow tie or tie description, cufflink suggestion, dress shirt), why it pairs well, and a brief AI style note in the voice of a warm fashion concierge (1 sentence, include a ✦).`
 
   const message = await anthropic.messages.create({
     model: CLAUDE_MODEL,
     max_tokens: 1024,
+    tools: [
+      {
+        name: 'format_tux_recommendations',
+        description: 'Format tuxedo recommendations as structured data',
+        input_schema: {
+          type: 'object' as const,
+          properties: {
+            recommendations: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  style: { type: 'string' },
+                  accessories: {
+                    type: 'object',
+                    properties: {
+                      pocketSquare: { type: 'string' },
+                      bowTie: { type: 'string' },
+                      cufflinks: { type: 'string' },
+                      shirt: { type: 'string' },
+                    },
+                    required: ['pocketSquare', 'bowTie', 'cufflinks', 'shirt'],
+                  },
+                  reason: { type: 'string' },
+                  aiNote: { type: 'string' },
+                },
+                required: ['style', 'accessories', 'reason', 'aiNote'],
+              },
+            },
+          },
+          required: ['recommendations'],
+        },
+      },
+    ],
+    tool_choice: { type: 'tool', name: 'format_tux_recommendations' },
     messages: [{ role: 'user', content: prompt }],
   })
 
-  const content = message.content[0]
-  if (content.type !== 'text') return []
+  const toolUse = message.content.find((b) => b.type === 'tool_use')
+  if (!toolUse || toolUse.type !== 'tool_use') return []
 
-  try {
-    // Extract JSON from the response
-    const jsonMatch = content.text.match(/\[[\s\S]*\]/)
-    if (!jsonMatch) return []
-    return JSON.parse(jsonMatch[0]) as TuxRecommendation[]
-  } catch {
-    return []
-  }
+  const input = toolUse.input as { recommendations: TuxRecommendation[] }
+  return input.recommendations ?? []
 }
 
 // ── STREAMING STYLE TIP (Server-Sent Events version) ─────────

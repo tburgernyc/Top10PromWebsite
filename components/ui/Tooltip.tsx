@@ -7,7 +7,7 @@ import {
   useEffect,
   type ReactNode,
 } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, type TargetAndTransition } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 // ── TYPES ─────────────────────────────────────────────────────
@@ -28,7 +28,7 @@ interface TooltipProps {
 
 const placementConfig: Record<
   TooltipPlacement,
-  { motion: { initial: object; animate: object }; positionClass: string }
+  { motion: { initial: TargetAndTransition; animate: TargetAndTransition }; positionClass: string }
 > = {
   top: {
     motion: { initial: { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 } },

@@ -6,7 +6,7 @@ import {
   type ReactNode,
   type CSSProperties,
 } from 'react'
-import { motion, useInView, useAnimation } from 'framer-motion'
+import { motion, useInView, useAnimation, type TargetAndTransition } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { prefersReducedMotion } from '@/lib/utils'
 
@@ -33,10 +33,10 @@ function getInitialVariant(
   direction: RevealDirection,
   distance: number,
   reduced: boolean
-) {
+): TargetAndTransition {
   if (reduced) return { opacity: 0 }
 
-  const map: Record<RevealDirection, object> = {
+  const map: Record<RevealDirection, TargetAndTransition> = {
     up: { opacity: 0, y: distance },
     down: { opacity: 0, y: -distance },
     left: { opacity: 0, x: distance },
