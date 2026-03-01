@@ -5,8 +5,12 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'picsum.photos',
+        pathname: '/**',
       },
     ],
+    // Restrict image optimization to defined domains only (GHSA-9g9p-9gw9-jx7f mitigation)
+    dangerouslyAllowSVG: false,
+    contentDispositionType: 'attachment',
   },
   // Enable React strict mode for better development experience
   reactStrictMode: true,
