@@ -335,14 +335,16 @@ export interface SearchResult {
 // ── FILTER ───────────────────────────────────────────────────
 
 export interface FilterState {
-  occasion?: Occasion
-  silhouette?: Silhouette
-  colors?: string[]
-  sizes?: string[]
-  priceMin?: number
-  priceMax?: number
-  designer?: string
-  sortBy?: 'popular' | 'newest' | 'price-asc' | 'price-desc' | 'designer-az'
+  occasion: string
+  color: string
+  priceRange: string
+  size: string
+  designer: string
+  sortBy: string
+  inStock: boolean
+  onSale: boolean
+  isNew: boolean
+  searchQuery: string
 }
 
 // ── TOAST ────────────────────────────────────────────────────

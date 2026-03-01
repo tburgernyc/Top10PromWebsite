@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { ProductGrid } from '@/components/shop/ProductGrid'
-import { FilterPanel } from '@/components/shop/FilterPanel'
+import { FilteredGrid } from '@/components/shop/FilteredGrid'
 import { SectionHeading } from '@/components/animations/ScrollReveal'
 import { DesignerStrip } from '@/components/landing/DesignerStrip'
 import { ChatWidget } from '@/components/chat/ChatWidget'
@@ -56,11 +55,7 @@ export default function PromPage() {
 
       {/* ── GRID + FILTER ── */}
       <section className="py-16 px-6 md:px-12 lg:px-20 max-w-screen-xl mx-auto">
-        <FilterPanel variant="bar" className="mb-10" />
-        <ProductGrid
-          dresses={promDresses}
-          showLoadMore
-        />
+        <FilteredGrid dresses={promDresses} showLoadMore />
       </section>
 
       {/* ── EDITORIAL SPOTLIGHT ── */}

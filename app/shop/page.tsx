@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { ProductGrid } from '@/components/shop/ProductGrid'
-import { FilterPanel } from '@/components/shop/FilterPanel'
+import { FilteredGrid } from '@/components/shop/FilteredGrid'
 import { CartDrawer } from '@/components/shop/CartDrawer'
 import { ChatWidget } from '@/components/chat/ChatWidget'
 import { DRESSES } from '@/lib/mock-data'
@@ -37,11 +36,7 @@ export default function ShopPage() {
 
       {/* ── FILTER + GRID ── */}
       <section className="pb-24 px-6 md:px-12 lg:px-20 max-w-screen-xl mx-auto">
-        <FilterPanel variant="bar" className="mb-10" />
-        <ProductGrid
-          dresses={DRESSES}
-          showLoadMore
-        />
+        <FilteredGrid dresses={DRESSES} showLoadMore />
       </section>
 
       <CartDrawer />
