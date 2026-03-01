@@ -140,10 +140,10 @@ function StoreStep({ value, onSelect }: { value: string | null; onSelect: (id: s
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.03, duration: 0.3 }}
-            onClick={() => onSelect(store.id)}
+            onClick={() => onSelect(String(store.id))}
             className={cn(
               'flex items-start gap-3 p-3.5 rounded-xl border text-left transition-all duration-200',
-              value === store.id
+              value === String(store.id)
                 ? 'bg-[var(--glass-gold)] border-gold/40'
                 : 'bg-[var(--glass-light)] border-white/10 hover:border-gold/25'
             )}
@@ -151,7 +151,7 @@ function StoreStep({ value, onSelect }: { value: string | null; onSelect: (id: s
           >
             <div className={cn('w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0', store.isHQ ? 'bg-[var(--gold)]' : 'bg-white/30')} />
             <div>
-              <p className={cn('text-sm font-sans font-semibold', value === store.id ? 'text-[var(--gold)]' : 'text-[var(--white-soft)]/80')}>
+              <p className={cn('text-sm font-sans font-semibold', value === String(store.id) ? 'text-[var(--gold)]' : 'text-[var(--white-soft)]/80')}>
                 {store.name}
                 {store.isHQ && <span className="ml-2 text-[9px] font-bold tracking-[0.15em] uppercase text-[var(--gold)]/60">HQ</span>}
               </p>
